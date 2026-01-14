@@ -1,0 +1,100 @@
+{
+  "subjective_terms": {
+    "performance": [
+      "fast", "slow", "quick", "rapid", "instant", "immediate",
+      "speedy", "swift", "brisk", "sluggish", "laggy", "smooth"
+    ],
+    "quality": [
+      "good", "bad", "better", "best", "worse", "worst",
+      "excellent", "poor", "superior", "inferior", "great", "terrible"
+    ],
+    "usability": [
+      "easy", "hard", "simple", "complex", "intuitive", "confusing",
+      "user-friendly", "difficult", "straightforward", "complicated"
+    ],
+    "reliability": [
+      "reliable", "unreliable", "robust", "fragile", "stable", "unstable",
+      "consistent", "inconsistent", "dependable", "flaky"
+    ],
+    "security": [
+      "secure", "insecure", "safe", "unsafe", "protected", "vulnerable",
+      "trustworthy", "risky", "encrypted", "exposed"
+    ],
+    "scalability": [
+      "scalable", "non-scalable", "flexible", "rigid", "adaptable", "inflexible",
+      "extensible", "limited", "expandable", "constrained"
+    ],
+    "efficiency": [
+      "efficient", "inefficient", "optimal", "suboptimal", "effective", "ineffective",
+      "productive", "wasteful", "streamlined", "cumbersome"
+    ]
+  },
+  "weak_modality": {
+    "possibility": [
+      "may", "might", "could", "can", "possibly", "potentially"
+    ],
+    "preference": [
+      "should", "preferably", "ideally", "ideally", "would like"
+    ],
+    "conditionality": [
+      "if possible", "when possible", "as needed", "when necessary",
+      "depending on", "in case of", "provided that"
+    ],
+    "frequency": [
+      "sometimes", "occasionally", "generally", "usually", "typically",
+      "normally", "often", "rarely", "frequently"
+    ],
+    "probability": [
+      "probably", "likely", "unlikely", "presumably", "apparently"
+    ]
+  },
+  "undefined_references": {
+    "pronouns": [
+      "it", "this", "that", "these", "those", "them", "they"
+    ],
+    "system_references": [
+      "the system", "the application", "the software", "the platform",
+      "the component", "the module", "the service", "the interface"
+    ],
+    "user_references": [
+      "the user", "the customer", "the client", "the admin",
+      "the manager", "the operator", "the visitor"
+    ],
+    "data_references": [
+      "the data", "the information", "the content", "the record",
+      "the entry", "the item", "the object", "the element"
+    ]
+  },
+  "non_testable_patterns": [
+    "handle.*properly",
+    "work.*correctly",
+    "function.*properly",
+    "behave.*correctly",
+    "perform.*properly",
+    "process.*correctly",
+    "respond.*appropriately",
+    "act.*properly",
+    "operate.*correctly",
+    "run.*smoothly",
+    "integrate.*seamlessly",
+    "communicate.*effectively",
+    "interact.*properly",
+    "execute.*successfully",
+    "complete.*successfully"
+  ],
+  "quantifiable_terms": {
+    "time": [
+      "second", "minute", "hour", "day", "week", "month",
+      "millisecond", "microsecond", "nanosecond"
+    ],
+    "percentage": [
+      "percent", "percentage", "%"
+    ],
+    "count": [
+      "times", "instances", "occurrences", "attempts"
+    ],
+    "size": [
+      "bytes", "KB", "MB", "GB", "TB", "pixels", "characters"
+    ]
+  }
+}

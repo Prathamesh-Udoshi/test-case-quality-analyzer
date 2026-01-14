@@ -1,0 +1,201 @@
+id,text,type,expected_ambiguity_score,expected_assumption_score,expected_readiness_level
+1,"The system should load fast and handle errors properly",requirement,85,45,High risk for automation
+2,"User logs in with valid credentials and accesses dashboard",requirement,15,85,Needs clarification
+3,"Click the submit button and verify error message appears",test_case,25,75,Needs clarification
+4,"The application must respond quickly to user interactions",requirement,78,35,High risk for automation
+5,"Given user is logged in, when clicking save, then data should persist",test_case,20,55,Needs clarification
+6,"System should be scalable and handle up to 1000 concurrent users",requirement,82,60,High risk for automation
+7,"Navigate to user profile page and update personal information",test_case,35,70,Needs clarification
+8,"The interface should be user-friendly and intuitive",requirement,88,25,High risk for automation
+9,"Verify that invalid email addresses are rejected during registration",test_case,30,50,Needs clarification
+10,"Application should work correctly in all browsers",requirement,65,85,Needs clarification
+11,"When user submits incomplete form, display appropriate error messages",test_case,45,40,Needs clarification
+12,"The system must be secure and protect user data",requirement,80,70,High risk for automation
+13,"Search functionality should return relevant results quickly",requirement,83,35,High risk for automation
+14,"User should be able to reset password using email link",test_case,40,60,Needs clarification
+15,"System should handle errors gracefully and provide meaningful messages",requirement,75,45,High risk for automation
+16,"After successful login, user can access admin panel",test_case,28,72,Needs clarification
+17,"The API should be efficient and return responses within 2 seconds",requirement,80,40,High risk for automation
+18,"Click menu items and verify correct pages load",test_case,32,65,Needs clarification
+19,"Application should be compatible with mobile devices",requirement,70,80,Needs clarification
+20,"Enter valid data and submit form successfully",test_case,35,45,Needs clarification
+21,"The system should perform optimally under heavy load",requirement,87,50,High risk for automation
+22,"User authentication should work reliably",requirement,72,65,High risk for automation
+23,"Verify calculation results are accurate",test_case,48,28,Needs clarification
+24,"System should integrate seamlessly with third-party services",requirement,78,75,High risk for automation
+25,"Click logout and verify user is redirected to login page",test_case,22,48,Ready
+26,"The platform should be robust and handle edge cases properly",requirement,85,40,High risk for automation
+27,"Upload file and verify it appears in document list",test_case,30,55,Needs clarification
+28,"Application should be accessible to users with disabilities",requirement,75,70,High risk for automation
+29,"Fill registration form with valid data and complete signup",test_case,38,52,Needs clarification
+30,"The system should be flexible and adapt to changing requirements",requirement,82,30,High risk for automation
+31,"Verify that user profile updates are saved correctly",test_case,35,45,Needs clarification
+32,"System should provide excellent performance and reliability",requirement,90,35,High risk for automation
+33,"When user enters invalid data, show helpful error message",test_case,42,38,Needs clarification
+34,"Application should be intuitive and easy to navigate",requirement,86,28,High risk for automation
+35,"Check that login works with different user roles",test_case,38,58,Needs clarification
+36,"The platform should be highly available and fault-tolerant",requirement,83,65,High risk for automation
+37,"Verify password reset functionality works end-to-end",test_case,40,55,Needs clarification
+38,"System should deliver outstanding user experience",requirement,88,32,High risk for automation
+39,"Test that search filters work correctly",test_case,45,35,Needs clarification
+40,"Application should be fast, reliable, and user-friendly",requirement,92,38,High risk for automation
+41,"Verify user can change password successfully",test_case,32,50,Needs clarification
+42,"System should provide seamless and intuitive experience",requirement,87,35,High risk for automation
+43,"Check that form validation works properly",test_case,38,42,Needs clarification
+44,"Platform should be robust, scalable, and efficient",requirement,89,55,High risk for automation
+45,"Verify email notifications are sent correctly",test_case,35,48,Needs clarification
+46,"Application should be secure, reliable, and performant",requirement,91,60,High risk for automation
+47,"Test that user sessions expire properly",test_case,40,52,Needs clarification
+48,"System should be intuitive, responsive, and reliable",requirement,90,42,High risk for automation
+49,"Verify that data export functionality works",test_case,38,45,Needs clarification
+50,"Platform should deliver optimal performance and user satisfaction",requirement,88,48,High risk for automation
+51,"The user should be able to easily find what they need",requirement,82,25,High risk for automation
+52,"Verify that the system handles network failures gracefully",test_case,55,65,Needs clarification
+53,"Application should provide fast and accurate results",requirement,84,35,High risk for automation
+54,"Check that user permissions are enforced correctly",test_case,42,58,Needs clarification
+55,"System should be highly secure and protect sensitive data",requirement,86,72,High risk for automation
+56,"Verify file upload functionality with various file types",test_case,38,55,Needs clarification
+57,"Platform should be user-friendly and efficient",requirement,85,30,High risk for automation
+58,"Test that audit logs are maintained properly",test_case,45,48,Needs clarification
+59,"Application should be intuitive and responsive",requirement,87,28,High risk for automation
+60,"Verify that user feedback forms work correctly",test_case,35,42,Needs clarification
+61,"System should be fast, reliable, and scalable",requirement,89,50,High risk for automation
+62,"Check that error pages are displayed properly",test_case,40,35,Needs clarification
+63,"Platform should provide excellent user experience",requirement,86,32,High risk for automation
+64,"Verify that help documentation is accessible",test_case,42,38,Needs clarification
+65,"Application should be efficient and user-friendly",requirement,85,28,High risk for automation
+66,"Test that user preferences are saved correctly",test_case,38,45,Needs clarification
+67,"System should be robust and handle errors properly",requirement,80,40,High risk for automation
+68,"Verify that notifications are sent at appropriate times",test_case,48,50,Needs clarification
+69,"Platform should be intuitive and easy to use",requirement,84,26,High risk for automation
+70,"Check that user sessions persist across browser restarts",test_case,45,55,Needs clarification
+71,"Application should provide optimal performance",requirement,83,35,High risk for automation
+72,"Verify that search indexing works correctly",test_case,50,40,Needs clarification
+73,"System should be user-friendly and reliable",requirement,82,30,High risk for automation
+74,"Test that data backup processes work",test_case,42,52,Needs clarification
+75,"Platform should be fast and responsive",requirement,81,28,High risk for automation
+76,"Verify that user authentication is secure",test_case,45,60,Needs clarification
+77,"Application should be intuitive and efficient",requirement,84,27,High risk for automation
+78,"Check that API rate limiting works properly",test_case,48,45,Needs clarification
+79,"System should be scalable and performant",requirement,80,48,High risk for automation
+80,"Verify that user roles and permissions work correctly",test_case,42,65,Needs clarification
+81,"Platform should be reliable and user-friendly",requirement,79,32,High risk for automation
+82,"Test that database connections are managed properly",test_case,50,55,Needs clarification
+83,"Application should be fast and intuitive",requirement,78,26,High risk for automation
+84,"Verify that caching mechanisms work correctly",test_case,52,42,Needs clarification
+85,"System should be efficient and scalable",requirement,76,45,High risk for automation
+86,"Check that logging and monitoring work properly",test_case,48,48,Needs clarification
+87,"Platform should be responsive and reliable",requirement,75,35,High risk for automation
+88,"Verify that data validation works for all input types",test_case,55,38,Needs clarification
+89,"Application should be user-friendly and fast",requirement,77,28,High risk for automation
+90,"Test that background jobs are processed correctly",test_case,50,52,Needs clarification
+91,"System should be robust and efficient",requirement,74,40,High risk for automation
+92,"Verify that email templates are rendered properly",test_case,45,42,Needs clarification
+93,"Platform should be intuitive and performant",requirement,73,30,High risk for automation
+94,"Check that user onboarding flow works smoothly",test_case,48,45,Needs clarification
+95,"Application should be reliable and user-friendly",requirement,72,28,High risk for automation
+96,"Verify that payment processing works correctly",test_case,52,58,Needs clarification
+97,"System should be fast and scalable",requirement,70,42,High risk for automation
+98,"Test that user data export complies with regulations",test_case,55,50,Needs clarification
+99,"Platform should be efficient and intuitive",requirement,69,26,High risk for automation
+100,"Verify that multi-factor authentication works",test_case,48,62,Needs clarification
+101,"Application should be performant and reliable",requirement,68,38,High risk for automation
+102,"Check that user activity tracking works properly",test_case,50,48,Needs clarification
+103,"System should be user-friendly and scalable",requirement,67,35,High risk for automation
+104,"Verify that file storage limits are enforced",test_case,45,52,Needs clarification
+105,"Platform should be responsive and efficient",requirement,66,28,High risk for automation
+106,"Test that user feedback is collected and analyzed",test_case,48,45,Needs clarification
+107,"Application should be intuitive and reliable",requirement,65,30,High risk for automation
+108,"Verify that system health checks work",test_case,52,42,Needs clarification
+109,"System should be fast and user-friendly",requirement,64,25,High risk for automation
+110,"Check that user communication preferences work",test_case,45,48,Needs clarification
+111,"Platform should be efficient and reliable",requirement,63,32,High risk for automation
+112,"Verify that data retention policies are enforced",test_case,50,50,Needs clarification
+113,"Application should be responsive and intuitive",requirement,62,26,High risk for automation
+114,"Test that user profile customization works",test_case,48,45,Needs clarification
+115,"System should be scalable and user-friendly",requirement,61,35,High risk for automation
+116,"Verify that integration with external services works",test_case,55,55,Needs clarification
+117,"Platform should be fast and efficient",requirement,60,28,High risk for automation
+118,"Check that user access logs are maintained",test_case,50,48,Needs clarification
+119,"Application should be reliable and intuitive",requirement,59,25,High risk for automation
+120,"Verify that system updates don't break functionality",test_case,52,50,Needs clarification
+121,"System should be performant and user-friendly",requirement,58,30,High risk for automation
+122,"Test that user data synchronization works",test_case,48,52,Needs clarification
+123,"Platform should be intuitive and scalable",requirement,57,32,High risk for automation
+124,"Verify that user consent management works properly",test_case,50,48,Needs clarification
+125,"Application should be efficient and reliable",requirement,56,28,High risk for automation
+126,"Check that automated testing runs successfully",test_case,45,42,Needs clarification
+127,"System should be fast and intuitive",requirement,55,22,Needs clarification
+128,"Verify that monitoring dashboards work correctly",test_case,48,45,Needs clarification
+129,"Platform should be responsive and user-friendly",requirement,54,25,Needs clarification
+130,"Test that user behavior analytics work",test_case,50,48,Needs clarification
+131,"Application should be reliable and efficient",requirement,53,28,Needs clarification
+132,"Verify that compliance reporting works",test_case,52,45,Needs clarification
+133,"System should be scalable and intuitive",requirement,52,30,Needs clarification
+134,"Check that user training materials are accessible",test_case,45,40,Needs clarification
+135,"Platform should be performant and reliable",requirement,51,32,Needs clarification
+136,"Verify that system migration processes work",test_case,50,50,Needs clarification
+137,"Application should be user-friendly and fast",requirement,50,25,Ready
+138,"Test that user support ticketing works",test_case,45,45,Ready
+139,"System should be efficient and intuitive",requirement,48,22,Ready
+140,"Verify that user engagement metrics work",test_case,42,42,Ready
+141,"Platform should be responsive and efficient",requirement,45,25,Ready
+142,"Check that user communication channels work",test_case,40,40,Ready
+143,"Application should be intuitive and reliable",requirement,42,22,Ready
+144,"Verify that user retention tracking works",test_case,38,38,Ready
+145,"System should be fast and reliable",requirement,40,25,Ready
+146,"Test that user satisfaction surveys work",test_case,35,35,Ready
+147,"Platform should be user-friendly and efficient",requirement,38,20,Ready
+148,"Verify that user onboarding analytics work",test_case,32,32,Ready
+149,"Application should be responsive and intuitive",requirement,35,18,Ready
+150,"Check that user experience testing works",test_case,30,30,Ready
+151,"System should work correctly",requirement,25,15,Ready
+152,"User should be able to login",test_case,15,40,Ready
+153,"Application should handle user input",requirement,20,25,Ready
+154,"Verify the system works",test_case,30,20,Ready
+155,"Platform should be available",requirement,15,35,Ready
+156,"Test basic functionality",test_case,25,15,Ready
+157,"System should process data",requirement,18,22,Ready
+158,"Check user interface",test_case,20,18,Ready
+159,"Application should save information",requirement,22,28,Ready
+160,"Verify data persistence",test_case,28,25,Ready
+161,"Platform should display content",requirement,16,20,Ready
+162,"Test user interactions",test_case,24,22,Ready
+163,"System should validate input",requirement,20,24,Ready
+164,"Check error handling",test_case,26,20,Ready
+165,"Application should load pages",requirement,14,18,Ready
+166,"Verify user authentication works",test_case,32,45,Needs clarification
+167,"System should encrypt sensitive data",requirement,35,50,Needs clarification
+168,"Test database connection",test_case,18,35,Ready
+169,"Platform should support multiple users",requirement,28,40,Needs clarification
+170,"Check file upload functionality",test_case,22,30,Ready
+171,"Application should send emails",requirement,25,35,Needs clarification
+172,"Verify API endpoints work",test_case,30,28,Ready
+173,"System should log activities",requirement,20,32,Ready
+174,"Test user session management",test_case,35,42,Needs clarification
+175,"Platform should handle concurrent users",requirement,32,45,Needs clarification
+176,"Check data export features",test_case,24,32,Ready
+177,"Application should integrate with payment systems",requirement,38,55,Needs clarification
+178,"Verify security measures work",test_case,40,48,Needs clarification
+179,"System should backup data automatically",requirement,28,38,Needs clarification
+180,"Test notification system",test_case,26,35,Ready
+181,"Platform should scale horizontally",requirement,35,50,Needs clarification
+182,"Check monitoring and alerting",test_case,32,40,Needs clarification
+183,"Application should support internationalization",requirement,30,42,Needs clarification
+184,"Verify compliance with regulations",test_case,38,45,Needs clarification
+185,"System should handle high traffic loads",requirement,40,52,Needs clarification
+186,"Test disaster recovery procedures",test_case,42,50,Needs clarification
+187,"Platform should provide analytics",requirement,28,38,Needs clarification
+188,"Check audit trail functionality",test_case,34,42,Needs clarification
+189,"Application should support mobile apps",requirement,32,48,Needs clarification
+190,"Verify third-party integrations work",test_case,36,44,Needs clarification
+191,"System should provide real-time updates",requirement,35,45,Needs clarification
+192,"Test automated deployment processes",test_case,38,42,Needs clarification
+193,"Platform should handle microservices architecture",requirement,42,55,Needs clarification
+194,"Check container orchestration works",test_case,40,48,Needs clarification
+195,"Application should support cloud deployment",requirement,38,50,Needs clarification
+196,"Verify DevOps pipeline works",test_case,35,45,Needs clarification
+197,"System should provide API documentation",requirement,25,32,Ready
+198,"Test CI/CD processes",test_case,30,38,Needs clarification
+199,"Platform should support multiple environments",requirement,33,42,Needs clarification
+200,"Check infrastructure as code works",test_case,35,40,Needs clarification

@@ -1,0 +1,144 @@
+{
+  "action_assumptions": {
+    "authentication": {
+      "login": ["user_exists", "credentials_exist"],
+      "log in": ["user_exists", "credentials_exist"],
+      "sign in": ["user_exists", "credentials_exist"],
+      "authenticate": ["user_exists", "credentials_exist"],
+      "logout": ["user_logged_in"],
+      "log out": ["user_logged_in"],
+      "sign out": ["user_logged_in"]
+    },
+    "navigation": {
+      "navigate": ["user_logged_in"],
+      "access": ["user_logged_in", "permissions_granted"],
+      "view": ["user_logged_in", "permissions_granted"],
+      "see": ["user_logged_in", "permissions_granted"],
+      "visit": ["user_logged_in"],
+      "go to": ["user_logged_in"],
+      "open": ["user_logged_in"]
+    },
+    "data_operations": {
+      "submit": ["form_filled", "user_logged_in"],
+      "save": ["data_entered", "user_logged_in"],
+      "update": ["record_exists", "user_logged_in"],
+      "delete": ["record_exists", "user_logged_in", "permissions_granted"],
+      "edit": ["record_exists", "user_logged_in", "permissions_granted"],
+      "modify": ["record_exists", "user_logged_in", "permissions_granted"],
+      "create": ["user_logged_in", "permissions_granted"],
+      "add": ["user_logged_in", "permissions_granted"]
+    },
+    "search_filter": {
+      "search": ["user_logged_in"],
+      "filter": ["user_logged_in"],
+      "sort": ["user_logged_in"],
+      "find": ["user_logged_in"],
+      "query": ["user_logged_in"]
+    },
+    "validation": {
+      "verify": ["condition_exists"],
+      "check": ["condition_exists"],
+      "validate": ["data_exists"],
+      "confirm": ["condition_exists"],
+      "ensure": ["condition_exists"],
+      "assert": ["condition_exists"]
+    },
+    "file_operations": {
+      "upload": ["file_exists", "user_logged_in"],
+      "download": ["file_exists", "user_logged_in", "permissions_granted"],
+      "export": ["data_exists", "user_logged_in"],
+      "import": ["file_exists", "user_logged_in", "permissions_granted"],
+      "attach": ["file_exists", "user_logged_in"]
+    },
+    "communication": {
+      "send": ["recipient_exists", "user_logged_in"],
+      "receive": ["sender_exists"],
+      "message": ["communication_setup"],
+      "email": ["recipient_exists", "user_logged_in"],
+      "notify": ["recipient_exists", "user_logged_in"]
+    }
+  },
+  "assumption_definitions": {
+    "user_exists": "Valid test user exists in the system",
+    "credentials_exist": "User credentials are available and valid",
+    "user_logged_in": "User is already authenticated/logged in",
+    "permissions_granted": "User has necessary permissions for the action",
+    "form_filled": "Form is already filled with valid data",
+    "data_entered": "Required data has been entered",
+    "record_exists": "Target record exists in the system",
+    "condition_exists": "Condition to verify is present",
+    "data_exists": "Required data exists for validation",
+    "error_trigger": "Error condition can be triggered",
+    "failure_condition": "Failure scenario can be reproduced",
+    "admin_role": "Admin user role is available",
+    "manager_role": "Manager user role is available",
+    "user_role": "Regular user role is available",
+    "file_exists": "Required file exists for the operation",
+    "recipient_exists": "Message recipient exists",
+    "sender_exists": "Message sender exists",
+    "communication_setup": "Communication channel is configured"
+  },
+  "assumption_categories": {
+    "user_exists": "Data",
+    "credentials_exist": "Data",
+    "user_logged_in": "State",
+    "permissions_granted": "State",
+    "form_filled": "Data",
+    "data_entered": "Data",
+    "record_exists": "Data",
+    "condition_exists": "State",
+    "data_exists": "Data",
+    "error_trigger": "State",
+    "failure_condition": "State",
+    "admin_role": "State",
+    "manager_role": "State",
+    "user_role": "State",
+    "file_exists": "Data",
+    "recipient_exists": "Data",
+    "sender_exists": "Data",
+    "communication_setup": "Environment"
+  },
+  "environment_indicators": {
+    "browsers": [
+      "browser", "chrome", "firefox", "safari", "edge", "opera",
+      "internet explorer", "brave", "vivaldi"
+    ],
+    "devices": [
+      "mobile", "desktop", "tablet", "phone", "laptop",
+      "smartphone", "phablet", "wearable"
+    ],
+    "operating_systems": [
+      "ios", "android", "windows", "mac", "linux", "ubuntu",
+      "centos", "redhat", "debian", "fedora"
+    ],
+    "network": [
+      "network", "wifi", "cellular", "3g", "4g", "5g",
+      "broadband", "dialup", "satellite"
+    ],
+    "display": [
+      "screen", "resolution", "viewport", "display",
+      "monitor", "touchscreen", "retina"
+    ]
+  },
+  "ui_actions": [
+    "click", "tap", "press", "select", "choose", "pick",
+    "type", "enter", "input", "fill", "scroll", "swipe",
+    "hover", "drag", "drop", "zoom", "pinch", "zoom in",
+    "zoom out", "scroll up", "scroll down", "swipe left",
+    "swipe right", "double click", "right click"
+  ],
+  "context_indicators": {
+    "user_context": [
+      "user", "login", "authenticate", "sign in", "logged in",
+      "account", "profile", "session", "dashboard", "homepage"
+    ],
+    "data_context": [
+      "data", "record", "entry", "information", "content",
+      "database", "table", "field", "value", "item"
+    ],
+    "permission_context": [
+      "permission", "access", "authorize", "role", "admin",
+      "manager", "editor", "viewer", "owner", "guest"
+    ]
+  }
+}
