@@ -14,6 +14,8 @@ This repository provides a production-ready solution for **Test Case Quality Ass
 * **Trustworthy Quality Scoring**: Context-aware algorithms with human-calibrated weights and confidence levels (HIGH/MEDIUM/LOW).
 * **Impact-Focused Test Feedback**: Every issue includes specific impact explanations and actionable clarification questions for automation.
 * **Comprehensive Test Quality Assessment**: Quantified automation-readiness scores with detailed component breakdowns for data-driven test planning.
+* **Assumption-Buster Agent**: An LLM-powered module that finds "Ghost Logic" and generates interrogation questions for stakeholders.
+* **Test Case Optimizer**: An intelligent agent that transforms vague test cases into structured, automation-ready steps (given issues found during analysis).
 
 ---
 
@@ -34,6 +36,7 @@ The project is modularized to ensure separation of concerns, reflecting a "clean
 * **NLP**: `spaCy` (Rule-based matching and POS tagging)
 * **Backend**: `FastAPI` / `Uvicorn`
 * **Frontend**: `Streamlit`, `Flask`
+* **AI/LLM**: `OpenAI GPT-4` (for requirement interrogation)
 * **Version Control**: `Git`
 
 ---

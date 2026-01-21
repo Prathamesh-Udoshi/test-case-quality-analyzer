@@ -87,6 +87,34 @@ class RequirementsAnalyzer:
             st.error(f"Batch API Error: {str(e)}")
             return []
 
+    def interrogate_requirement(self, text: str, issues: List[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """Call the Assumption-Buster interrogation endpoint."""
+        try:
+            response = requests.post(
+                f"{self.api_url}/analyze/interrogate",
+                json={"text": text, "issues": issues or []},
+                timeout=60
+            )
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            st.error(f"Interrogation API Error: {str(e)}")
+            return None
+
+    def optimize_test_case(self, text: str, issues: List[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """Call the Test Case Optimizer endpoint."""
+        try:
+            response = requests.post(
+                f"{self.api_url}/analyze/optimize",
+                json={"text": text, "issues": issues or []},
+                timeout=60
+            )
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            st.error(f"Optimization API Error: {str(e)}")
+            return None
+
     def health_check(self) -> bool:
         """Check if the API is available."""
         try:
@@ -286,17 +314,23 @@ def show_single_analysis(analyzer: RequirementsAnalyzer):
 
         if not text_to_analyze:
             st.error("Please enter some text to analyze.")
-            return
-
-        with st.spinner("🔍 Analyzing test case quality..."):
-            result = analyzer.analyze_text(text_to_analyze)
-
-        if result:
-            st.success("✅ Test quality analysis completed!")
-            display_analysis_result(text_to_analyze, result)
         else:
-            st.error("❌ Analysis failed. Please check the API connection and try again.")
-            st.info("💡 Make sure the FastAPI server is running on http://localhost:8000")
+            with st.spinner("🔍 Analyzing test case quality..."):
+                result = analyzer.analyze_text(text_to_analyze)
+
+            if result:
+                st.session_state.analysis_result = result
+                st.session_state.last_analyzed_text = text_to_analyze
+                # Clear previous secondary results
+                st.session_state.optimized_version = None 
+                st.session_state.interrogator_output = None
+            else:
+                st.error("❌ Analysis failed. Please check the API connection and try again.")
+                st.info("💡 Make sure the FastAPI server is running on http://localhost:8000")
+
+    # Display results if they exist in session state
+    if 'analysis_result' in st.session_state and st.session_state.analysis_result:
+        display_analysis_result(st.session_state.last_analyzed_text, st.session_state.analysis_result, analyzer)
 
 
 def show_batch_analysis(analyzer: RequirementsAnalyzer):
@@ -396,7 +430,7 @@ def show_dashboard(analyzer: RequirementsAnalyzer):
         st.info("Make sure the sample_requirements.csv file exists in the data directory")
 
 
-def display_analysis_result(text: str, result: Dict[str, Any]):
+def display_analysis_result(text: str, result: Dict[str, Any], analyzer: RequirementsAnalyzer):
     """Display analysis result with explanation-first UI design."""
 
     # 1. RISK SUMMARY FIRST - Most important message upfront
@@ -454,9 +488,42 @@ def display_analysis_result(text: str, result: Dict[str, Any]):
         st.caption("*Specific problems that could affect test automation success*")
         _display_impact_issues(result['issues'])
 
-    # 5. CLARIFYING QUESTIONS AS PRIMARY CTA
-    if result.get('clarifying_questions'):
-        _display_clarifying_questions(result['clarifying_questions'])
+    # 5. DEEP INTERROGATION (Replaces basic Clarifying Questions)
+    st.markdown("---")
+    st.markdown("### 🔍 Deep Interrogation")
+    st.caption("*Agent hunts for 'Ghost Logic' and hidden assumptions*")
+
+    if st.button("🕵️ Hunt for Hidden Assumptions", key="interrogate_btn", use_container_width=True):
+        with st.spinner("🕵️ Agent is interrogating the requirement..."):
+            inter_result = analyzer.interrogate_requirement(text, result.get('issues', []))
+            if inter_result:
+                st.session_state.interrogator_output = inter_result['questions']
+
+    if 'interrogator_output' in st.session_state and st.session_state.interrogator_output:
+        st.info("Ask stakeholders these targeted questions to uncover hidden automation risks.")
+        st.markdown(st.session_state.interrogator_output)
+        if st.button("Clear Interrogation", key="clear_inter"):
+            st.session_state.interrogator_output = None
+            st.rerun()
+
+    # 5b. TEST CASE OPTIMIZER
+    st.markdown("---")
+    st.markdown("### ✨ Automation Optimizer")
+    st.caption("*Transform this test case into a structured, automation-ready format*")
+    
+    if st.button("🚀 Optimize for Automation", key="optimize_btn", use_container_width=True):
+        with st.spinner("🤖 AI is rewriting test steps..."):
+            opt_result = analyzer.optimize_test_case(text, result.get('issues', []))
+            if opt_result:
+                st.session_state.optimized_version = opt_result['optimized']
+    
+    if 'optimized_version' in st.session_state and st.session_state.optimized_version:
+        st.markdown("#### ✅ Optimized Test Case")
+        st.info("This version addresses the core issues and provides deterministic steps for automation.")
+        st.markdown(st.session_state.optimized_version)
+        if st.button("Clear Optimization", key="clear_opt"):
+            st.session_state.optimized_version = None
+            st.rerun()
 
     # 6. Original text (collapsed by default)
     with st.expander("📝 Original Test Case", expanded=False):
@@ -892,7 +959,6 @@ def display_dashboard_metrics(results: List[Dict[str, Any]]):
         st.plotly_chart(fig3, use_container_width=True)
     else:
         st.info("No issues detected in the analyzed requirements!")
-
 
 if __name__ == "__main__":
     main()

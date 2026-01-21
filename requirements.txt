@@ -20,3 +20,7 @@ plotly==5.17.0
 flask==3.0.0
 matplotlib==3.8.2
 pandas==2.1.4
+
+# AI / LLM
+openai>=1.50.0
+python-dotenv==1.0.0

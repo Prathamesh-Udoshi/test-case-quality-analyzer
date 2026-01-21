@@ -28,6 +28,9 @@ from pydantic import BaseModel, Field
 from core.scorer import RequirementScorer
 from core.suggestions import SuggestionGenerator
 from nlp.preprocess import TextPreprocessor
+from core.interrogator import AssumptionBuster
+from core.optimizer import TestCaseOptimizer
+from core.config import settings
 
 # Configure logging
 logging.basicConfig(
@@ -69,6 +72,12 @@ class AnalyzeRequest(BaseModel):
         description="The test case or requirement text to analyze",
         example="User logs in with valid credentials and accesses dashboard"
     )
+
+
+class RequirementInput(BaseModel):
+    """Input model for requirement interrogation."""
+    text: str = Field(..., description="The requirement text to interrogate")
+    issues: List[Dict[str, Any]] = Field(default=[], description="Detected issues for context")
 
 
 class ComponentScore(BaseModel):
@@ -255,6 +264,56 @@ async def analyze_batch(request: Dict[str, Any]):
     except Exception as e:
         logger.error(f"Batch analysis error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Batch analysis failed: {str(e)}")
+
+
+@app.post("/analyze/interrogate")
+async def interrogate(requirement: RequirementInput):
+    """
+    Generate interrogation questions for a requirement to uncover hidden assumptions.
+    
+    Uses LLM-based analysis to find 'Ghost Logic' and 'Hidden Assumptions'.
+    """
+    try:
+        logger.info(f"Interrogating requirement: {requirement.text[:100]}...")
+        
+        buster = AssumptionBuster(api_key=settings.OPENAI_API_KEY)
+        questions = buster.interrogate_requirement(requirement.text, requirement.issues)
+        
+        return {
+            "requirement": requirement.text,
+            "questions": questions
+        }
+    except Exception as e:
+        logger.error(f"Interrogation error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Interrogation failed: {str(e)}")
+
+
+class OptimizeRequest(BaseModel):
+    """Request model for test case optimization."""
+    text: str = Field(..., description="The test case text to optimize")
+    issues: List[Dict[str, Any]] = Field(default=[], description="Detected issues to address")
+
+
+@app.post("/analyze/optimize")
+async def optimize_test_case(request: OptimizeRequest):
+    """
+    Optimize a test case for automation readiness.
+    
+    Transforms vague test cases into structured, deterministic steps.
+    """
+    try:
+        logger.info(f"Optimizing test case: {request.text[:100]}...")
+        
+        optimizer = TestCaseOptimizer(api_key=settings.OPENAI_API_KEY)
+        optimized_text = optimizer.optimize_test_case(request.text, request.issues)
+        
+        return {
+            "original": request.text,
+            "optimized": optimized_text
+        }
+    except Exception as e:
+        logger.error(f"Optimization error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Optimization failed: {str(e)}")
 
 
 @app.middleware("http")
