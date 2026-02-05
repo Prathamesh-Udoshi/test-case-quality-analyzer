@@ -5,6 +5,14 @@ An interactive web interface for analyzing test case quality and assumptions.
 Built with Streamlit for rapid prototyping and easy deployment.
 """
 
+import sys
+import os
+from pathlib import Path
+
+# Add project root to path so 'core' can be imported
+root_path = Path(__file__).parent.parent
+sys.path.append(str(root_path))
+
 import streamlit as st
 import requests
 import json
@@ -13,10 +21,11 @@ import time
 from typing import Dict, Any, List
 import plotly.express as px
 import plotly.graph_objects as go
+from core.config import settings
 
 
 # Configuration
-API_BASE_URL = "http://localhost:8000"  # Change this for production
+API_BASE_URL = settings.API_URL
 DEFAULT_EXAMPLES = [
     "The system should load fast and handle errors properly",
     "User logs in with valid credentials and accesses dashboard",
@@ -49,8 +58,8 @@ class RequirementsAnalyzer:
             return result
 
         except requests.exceptions.ConnectionError:
-            st.error("❌ Cannot connect to API server. Make sure the FastAPI server is running on http://localhost:8000")
-            st.info("Start the server with: `python app.py`")
+            st.error(f"❌ Cannot connect to API server. Make sure the FastAPI server is running on {self.api_url}")
+            st.info("Start the server with: `python app.py` or check if the target API is active.")
             return None
         except requests.exceptions.Timeout:
             st.error("⏰ API request timed out. The server might be overloaded.")
@@ -239,7 +248,7 @@ def main():
             st.success("✅ API Connected")
         else:
             st.error("❌ API Not Available")
-            st.info("Make sure the FastAPI server is running on port 8000")
+            st.info(f"Make sure the FastAPI server is running on {analyzer.api_url}")
 
         st.markdown("---")
 
@@ -326,7 +335,7 @@ def show_single_analysis(analyzer: RequirementsAnalyzer):
                 st.session_state.interrogator_output = None
             else:
                 st.error("❌ Analysis failed. Please check the API connection and try again.")
-                st.info("💡 Make sure the FastAPI server is running on http://localhost:8000")
+                st.info(f"💡 Make sure the FastAPI server is running on {analyzer.api_url}")
 
     # Display results if they exist in session state
     if 'analysis_result' in st.session_state and st.session_state.analysis_result:
