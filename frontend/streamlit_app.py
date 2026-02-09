@@ -126,11 +126,17 @@ class RequirementsAnalyzer:
 
     def health_check(self) -> bool:
         """Check if the API is available."""
-        try:
-            response = requests.get(f"{self.api_url}/health", timeout=10)
-            return response.status_code == 200
-        except:
-            return False
+        return check_api_health(self.api_url)
+
+
+@st.cache_data(ttl=60)
+def check_api_health(api_url: str) -> bool:
+    """Cached check to see if the API is available."""
+    try:
+        response = requests.get(f"{api_url}/health", timeout=5)
+        return response.status_code == 200
+    except:
+        return False
 
 
 def main():
@@ -390,7 +396,8 @@ def show_batch_analysis(analyzer: RequirementsAnalyzer):
 
     else:  # Sample Data
         try:
-            df = pd.read_csv("../data/sample_requirements.csv")
+            sample_data_path = root_path / "data" / "sample_requirements.csv"
+            df = pd.read_csv(sample_data_path)
             requirements = df['text'].tolist()[:10]  # First 10 samples
             st.info(f"Using {len(requirements)} sample requirements")
         except:
@@ -425,7 +432,8 @@ def show_dashboard(analyzer: RequirementsAnalyzer):
 
     # Load sample data for demo
     try:
-        df = pd.read_csv("../data/sample_requirements.csv")
+        sample_data_path = root_path / "data" / "sample_requirements.csv"
+        df = pd.read_csv(sample_data_path)
         sample_texts = df['text'].tolist()
 
         with st.spinner("Analyzing sample requirements..."):
@@ -436,7 +444,7 @@ def show_dashboard(analyzer: RequirementsAnalyzer):
 
     except Exception as e:
         st.error(f"Could not load sample data: {e}")
-        st.info("Make sure the sample_requirements.csv file exists in the data directory")
+        st.info(f"Make sure the sample_requirements.csv file exists in {root_path / 'data'}")
 
 
 def display_analysis_result(text: str, result: Dict[str, Any], analyzer: RequirementsAnalyzer):
