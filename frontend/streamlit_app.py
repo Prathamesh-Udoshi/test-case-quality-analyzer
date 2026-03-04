@@ -345,7 +345,21 @@ def show_single_analysis(analyzer: RequirementsAnalyzer):
 
     # Display results if they exist in session state
     if 'analysis_result' in st.session_state and st.session_state.analysis_result:
-        display_analysis_result(st.session_state.last_analyzed_text, st.session_state.analysis_result, analyzer)
+        result = st.session_state.analysis_result
+        # Validate the response structure — mock mode may return incomplete data
+        required_keys = {'readiness_score', 'readiness_level', 'ambiguity', 'assumptions', 'issues'}
+        if not required_keys.issubset(result.keys()) or result.get('readiness_score') is None:
+            st.error(
+                "⚠️ The server returned an incomplete response. "
+                "This usually means the mock server has not yet learned the schema for this endpoint. "
+                "Please switch to **Proxy (Ghost) Mode**, make one real request, then switch back to **Mock (Rocket) Mode**."
+            )
+            st.json(result)  # Show what was actually returned
+            if st.button("Clear Result"):
+                st.session_state.analysis_result = None
+                st.rerun()
+        else:
+            display_analysis_result(st.session_state.last_analyzed_text, result, analyzer)
 
 
 def show_batch_analysis(analyzer: RequirementsAnalyzer):
@@ -454,8 +468,8 @@ def display_analysis_result(text: str, result: Dict[str, Any], analyzer: Require
     st.markdown("### 🎯 Analysis Summary")
     st.caption("*Intelligent analysis of test automation readiness and quality risks*")
 
-    readiness_score = round(result['readiness_score'])
-    readiness_level = result['readiness_level']
+    readiness_score = round(result.get('readiness_score') or 0)
+    readiness_level = result.get('readiness_level') or 'Unknown'
 
     # Generate human-readable risk summary
     risk_message, risk_color = _get_risk_summary(readiness_score, readiness_level, result)
@@ -767,9 +781,9 @@ def _display_impact_issues(issues: List[Dict[str, Any]]):
 
     # Group issues by type but focus on impact
     for issue in issues:
-        issue_type = issue.get('type', 'Unknown')
-        message = issue.get('message', '')
-        impact = issue.get('impact', 'May cause testing issues')
+        issue_type = issue.get('type') or 'Unknown'
+        message = issue.get('message') or ''     # .get() returns None when key=null; `or ''` handles it
+        impact = issue.get('impact') or 'May cause testing issues'
 
         # Create expandable issue with impact focus
         with st.expander(f"**{issue_type}**: {message[:60]}{'...' if len(message) > 60 else ''}", expanded=False):
