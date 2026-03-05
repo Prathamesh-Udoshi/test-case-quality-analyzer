@@ -291,30 +291,39 @@ def show_single_analysis(analyzer: RequirementsAnalyzer):
     # Initialize session state for text input
     if 'requirement_text' not in st.session_state:
         st.session_state.requirement_text = ""
+    
+    # Initialize the widget key
+    if 'main_text_area' not in st.session_state:
+        st.session_state.main_text_area = st.session_state.requirement_text
+
+    # Callback for example buttons
+    def load_example(example_text):
+        st.session_state.main_text_area = example_text
+        st.session_state.requirement_text = example_text
 
     # Input section
     col1, col2 = st.columns([3, 1])
 
     with col1:
-        # Text input
+        # Text input using key-based session state
         requirement_text = st.text_area(
             "Enter your test case or requirement:",
-            value=st.session_state.requirement_text,
             height=100,
             placeholder="Example: User logs in with valid credentials and accesses dashboard",
             key="main_text_area"
         )
-
-        # Update session state when text changes
-        if requirement_text != st.session_state.requirement_text:
-            st.session_state.requirement_text = requirement_text
+        # Keep requirement_text in sync
+        st.session_state.requirement_text = st.session_state.main_text_area
 
     with col2:
         st.markdown("**Quick Examples:**")
         for i, example in enumerate(DEFAULT_EXAMPLES[:3]):
-            if st.button(f"Ex {i+1}", key=f"quick_{i}"):
-                st.session_state.requirement_text = example
-                st.rerun()
+            st.button(
+                f"Ex {i+1}", 
+                key=f"quick_{i}", 
+                on_click=load_example, 
+                args=(example,)
+            )
 
     # Input validation
     text_length = len(requirement_text.strip())
