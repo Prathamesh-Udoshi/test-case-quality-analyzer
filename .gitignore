@@ -223,3 +223,9 @@ project_analysis.md.resolved
 project_analysis.md
 demo_script.md.resolved
 demo_script.md
+# Frontend
+node_modules/
+.next/
+out/
+.env*.local
+.vercel

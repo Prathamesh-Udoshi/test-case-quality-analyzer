@@ -66,3 +66,28 @@ Convert the input test case into a highly detailed, deterministic, and measurabl
             return response.choices[0].message.content
         except Exception as e:
             return f"Error optimizing test case: {str(e)}"
+
+    def optimize_stream(self, test_case_text: str, detected_issues: List[Dict[str, Any]] = None):
+        """Streams the optimization results token by token."""
+        issue_context = ""
+        if detected_issues:
+            issue_descriptions = [f"- {i.get('type')}: {i.get('message')}" for i in detected_issues]
+            issue_context = "\n**ISSUES TO ADDRESS:**\n" + "\n".join(issue_descriptions)
+
+        user_content = f"USER TEST CASE: {test_case_text}{issue_context}\n\nPlease provide an OPTIMIZED version of this test case."
+
+        try:
+            stream = self.client.chat.completions.create(
+                model="gpt-4-turbo-preview",
+                messages=[
+                    {"role": "system", "content": self.system_prompt},
+                    {"role": "user", "content": user_content}
+                ],
+                temperature=0.2,
+                stream=True
+            )
+            for chunk in stream:
+                if chunk.choices[0].delta.content is not None:
+                    yield chunk.choices[0].delta.content
+        except Exception as e:
+            yield f"Error optimizing test case: {str(e)}"

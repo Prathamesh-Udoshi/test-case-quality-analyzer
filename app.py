@@ -22,7 +22,9 @@ import logging
 from typing import Dict, Any,List
 
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
+import json
 from pydantic import BaseModel, Field
 
 from core.scorer import RequirementScorer
@@ -288,6 +290,23 @@ async def interrogate(requirement: RequirementInput):
         raise HTTPException(status_code=500, detail=f"Interrogation failed: {str(e)}")
 
 
+@app.post("/analyze/interrogate/stream")
+async def interrogate_stream(requirement: RequirementInput):
+    """
+    SSE endpoint for streaming interrogation results.
+    """
+    async def event_generator():
+        try:
+            buster = AssumptionBuster(api_key=settings.OPENAI_API_KEY)
+            for token in buster.interrogate_stream(requirement.text, requirement.issues):
+                # SSE format: data: <content>\n\n
+                yield f"data: {json.dumps({'token': token})}\n\n"
+        except Exception as e:
+            yield f"data: {json.dumps({'error': str(e)})}\n\n"
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
+
+
 class OptimizeRequest(BaseModel):
     """Request model for test case optimization."""
     text: str = Field(..., description="The test case text to optimize")
@@ -314,6 +333,22 @@ async def optimize_test_case(request: OptimizeRequest):
     except Exception as e:
         logger.error(f"Optimization error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Optimization failed: {str(e)}")
+
+
+@app.post("/analyze/optimize/stream")
+async def optimize_stream(request: OptimizeRequest):
+    """
+    SSE endpoint for streaming optimization results.
+    """
+    async def event_generator():
+        try:
+            optimizer = TestCaseOptimizer(api_key=settings.OPENAI_API_KEY)
+            for token in optimizer.optimize_stream(request.text, request.issues):
+                yield f"data: {json.dumps({'token': token})}\n\n"
+        except Exception as e:
+            yield f"data: {json.dumps({'error': str(e)})}\n\n"
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
 
 
 @app.middleware("http")

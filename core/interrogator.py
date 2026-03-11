@@ -57,3 +57,29 @@ Given a requirement or test case, you must identify what is NOT said. You will g
             return response.choices[0].message.content
         except Exception as e:
             return f"Error interrogating requirement: {str(e)}"
+
+    def interrogate_stream(self, requirement_text: str, detected_issues: List[Dict[str, Any]] = None):
+        """Streams the interrogation results token by token."""
+        issue_context = ""
+        if detected_issues:
+            issue_descriptions = [f"- {i.get('type')}: {i.get('message')}" for i in detected_issues]
+            issue_context = "\n**PREVIOUSLY DETECTED ISSUES:**\n" + "\n".join(issue_descriptions)
+            issue_context += "\n\nNote: The issues above have already been found. Focus your interrogation on 'Ghost Logic'—the deeper, hidden assumptions NOT covered by these basic checks."
+
+        user_content = f"USER REQUIREMENT: {requirement_text}{issue_context}"
+
+        try:
+            stream = self.client.chat.completions.create(
+                model="gpt-4-turbo-preview",
+                messages=[
+                    {"role": "system", "content": self.system_prompt},
+                    {"role": "user", "content": user_content}
+                ],
+                temperature=0.3,
+                stream=True
+            )
+            for chunk in stream:
+                if chunk.choices[0].delta.content is not None:
+                    yield chunk.choices[0].delta.content
+        except Exception as e:
+            yield f"Error interrogating requirement: {str(e)}"

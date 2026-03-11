@@ -25,18 +25,18 @@ The project is modularized to ensure separation of concerns, reflecting a "clean
 
 * **`core/`**: Advanced multi-signal test quality engine with context-aware rules, assumption strength classification, and confidence indicators.
 * **`nlp/`**: Sophisticated pre-processing pipelines with spaCy POS tagging and dependency parsing for intelligent test case analysis.
-* **`frontend/`**: Enhanced Streamlit UI with explanation-first design, multi-signal visualizations, and automation-focused feedback.
+* **`frontend/`**: Premium **Next.js 14** web application replace the legacy Streamlit UI, providing real-time SSE streaming and interactive dashboards.
 * **`data/`**: Comprehensive JSON configuration including human-calibrated weights, pattern libraries, and test case calibration datasets.
 
 ---
 
 ## 🛠️ Tech Stack
 
-* **Language**: Python 3.10+
+* **Language**: Python 3.10+ (Backend), TypeScript (Frontend)
 * **NLP**: `spaCy` (Rule-based matching and POS tagging)
 * **Backend**: `FastAPI` / `Uvicorn`
-* **Frontend**: `Streamlit`, `Flask`
-* **AI/LLM**: `OpenAI GPT-4` (for requirement interrogation)
+* **Frontend**: `Next.js 14`, `Tailwind CSS`, `shadcn/ui`
+* **AI/LLM**: `OpenAI GPT-4` (for requirement interrogation & optimization)
 * **Version Control**: `Git`
 
 ---
@@ -51,18 +51,20 @@ The project is modularized to ensure separation of concerns, reflecting a "clean
 
 1.  **Clone the repository**:
     ```bash
-    git clone [https://github.com/Prathamesh-Udoshi/ai-req-assumptions-analyzer.git](https://github.com/Prathamesh-Udoshi/ai-req-assumptions-analyzer.git)
+    git clone https://github.com/Prathamesh-Udoshi/ai-req-assumptions-analyzer.git
     cd req_quality_ai
     ```
 
 2.  **Install dependencies**:
     ```bash
+    # Backend
     pip install -r requirements.txt
-    ```
-
-3.  **Download the NLP model**:
-    ```bash
     python -m spacy download en_core_web_sm
+
+    # Frontend
+    cd frontend
+    npm install
+    cd ..
     ```
 
 ### Running the Application
@@ -71,15 +73,14 @@ To start the **FastAPI** backend:
 ```bash
 python app.py
 ```
+*The API runs on http://localhost:8001*
 
-
-### 🚀 Launching the Enhanced Streamlit Interface
-
-Experience the next-generation requirements quality analysis with our redesigned Streamlit interface:
-
+To start the **Next.js** frontend:
 ```bash
-streamlit run frontend/streamlit_app.py
+cd frontend
+npm run dev
 ```
+*The app runs on http://localhost:3000*
 
 **✨ New Features:**
 - **Explanation-First UI**: Risk summaries appear before raw scores
