@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   FileSearch,
   LayoutDashboard,
@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 import { checkHealth } from "@/lib/api";
 
 const navItems = [
-  { href: "/", label: "Analyze", icon: FileSearch },
+  { href: "/analyze", label: "Analyze", icon: FileSearch },
   { href: "/batch", label: "Batch", icon: Layers },
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
 ];
@@ -33,18 +33,18 @@ export default function Navbar() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 glass border-b border-border/40">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
+    <header className="sticky top-0 z-50 bg-[#09090b]/80 backdrop-blur-md border-b border-zinc-800">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 border border-primary/20 group-hover:glow-primary transition-shadow">
-            <FileSearch className="h-5 w-5 text-primary-light" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500/10">
+            <FileSearch className="h-4 w-4 text-indigo-400" />
           </div>
-          <div className="hidden sm:block">
-            <span className="text-base font-semibold tracking-tight gradient-text">
+          <div className="hidden sm:flex items-center gap-2">
+            <span className="text-sm font-semibold tracking-tight gradient-text">
               ReqQuality AI
             </span>
-            <span className="ml-2 text-[10px] font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full">
+            <span className="text-[10px] font-medium text-zinc-600 bg-zinc-800/60 px-1.5 py-0.5 rounded-full">
               v2.0
             </span>
           </div>
@@ -53,29 +53,20 @@ export default function Navbar() {
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-1">
           {navItems.map(({ href, label, icon: Icon }) => {
-            const active =
-              href === "/" ? pathname === "/" : pathname.startsWith(href);
+            const active = pathname.startsWith(href);
             return (
               <Link
                 key={href}
                 href={href}
                 className={cn(
-                  "relative flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all",
+                  "relative flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors",
                   active
-                    ? "text-primary-light bg-primary/10"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                    ? "text-indigo-400 bg-indigo-500/10"
+                    : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
                 )}
               >
                 <Icon className="h-4 w-4" />
                 {label}
-                {active && (
-                  <motion.div
-                    layoutId="nav-indicator"
-                    className="absolute inset-0 rounded-lg bg-primary/10 border border-primary/20"
-                    style={{ zIndex: -1 }}
-                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                  />
-                )}
               </Link>
             );
           })}
@@ -95,7 +86,7 @@ export default function Navbar() {
                   : "text-zinc-500 animate-pulse"
               )}
             />
-            <span className="hidden sm:inline text-muted-foreground">
+            <span className="hidden sm:inline text-zinc-500">
               {healthy === true
                 ? "API Connected"
                 : healthy === false
@@ -106,13 +97,13 @@ export default function Navbar() {
 
           {/* Mobile menu button */}
           <button
-            className="md:hidden p-2 rounded-lg hover:bg-muted transition"
+            className="md:hidden p-2 rounded-lg hover:bg-zinc-800 transition"
             onClick={() => setMobileOpen(!mobileOpen)}
           >
             {mobileOpen ? (
-              <X className="h-5 w-5" />
+              <X className="h-5 w-5 text-zinc-400" />
             ) : (
-              <Menu className="h-5 w-5" />
+              <Menu className="h-5 w-5 text-zinc-400" />
             )}
           </button>
         </div>
@@ -125,12 +116,11 @@ export default function Navbar() {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="md:hidden border-t border-border/40 overflow-hidden"
+            className="md:hidden border-t border-zinc-800 overflow-hidden"
           >
             <div className="px-4 py-3 space-y-1">
               {navItems.map(({ href, label, icon: Icon }) => {
-                const active =
-                  href === "/" ? pathname === "/" : pathname.startsWith(href);
+                const active = pathname.startsWith(href);
                 return (
                   <Link
                     key={href}
@@ -139,8 +129,8 @@ export default function Navbar() {
                     className={cn(
                       "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition",
                       active
-                        ? "text-primary-light bg-primary/10"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                        ? "text-indigo-400 bg-indigo-500/10"
+                        : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
                     )}
                   >
                     <Icon className="h-4 w-4" />

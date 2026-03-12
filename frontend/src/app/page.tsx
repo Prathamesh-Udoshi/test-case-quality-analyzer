@@ -1,286 +1,425 @@
 "use client";
 
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React from "react";
+import Link from "next/link";
+import { motion, type Variants } from "framer-motion";
 import {
+  ArrowRight,
   Search,
-  Loader2,
-  Lightbulb,
-  MessageSquareText,
-  FileText,
+  Layers,
+  LayoutDashboard,
+  BrainCircuit,
+  ShieldCheck,
+  Target,
+  AlertTriangle,
+  Eye,
+  Sparkles,
+  ChevronRight,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { analyzeText } from "@/lib/api";
-import type { AnalysisResult } from "@/lib/types";
-import {
-  ReadinessMeter,
-  ConfidenceBadge,
-  AmbiguityBreakdown,
-  AssumptionBreakdown,
-  IssueList,
-  RiskSummary,
-} from "@/components/analysis/ResultCards";
-import { InterrogatorPanel } from "@/components/ai/AIPanels";
-import { OptimizerPanel } from "@/components/ai/AIPanels";
 
-const EXAMPLES = [
-  "The system should load fast and handle errors properly",
-  "User logs in with valid credentials and accesses dashboard",
-  "Click the submit button and verify error message appears",
-  "The application must respond quickly to user interactions",
-  "Given user is logged in, when clicking save, then data should persist",
-  "System should be scalable and handle up to 1000 concurrent users",
-  "Navigate to user profile page and update personal information",
+/* ────────────────────────────────────────────────── */
+/*  Fade-in animation variants                        */
+/* ────────────────────────────────────────────────── */
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.1, duration: 0.5, ease: "easeOut" },
+  }),
+};
+
+/* ────────────────────────────────────────────────── */
+/*  Features data                                     */
+/* ────────────────────────────────────────────────── */
+const features = [
+  {
+    icon: Eye,
+    title: "Ambiguity Detection",
+    description:
+      "Identifies vague language, untestable statements, and ambiguous references in your test cases using NLP-powered lexical analysis.",
+    color: "#818cf8",
+  },
+  {
+    icon: AlertTriangle,
+    title: "Hidden Assumption Finder",
+    description:
+      "Surfaces implicit assumptions about environment, data, and system state that could cause test failures or misinterpretation.",
+    color: "#f59e0b",
+  },
+  {
+    icon: Target,
+    title: "Automation Readiness Score",
+    description:
+      "Assigns a readiness score to each test case, clearly indicating whether it's ready, needs clarification, or is high-risk for automation.",
+    color: "#22c55e",
+  },
+  {
+    icon: BrainCircuit,
+    title: "AI Deep Interrogation",
+    description:
+      "Uses LLM-powered questioning to probe requirements for missing information, edge cases, and unstated preconditions.",
+    color: "#a78bfa",
+  },
+  {
+    icon: Sparkles,
+    title: "AI Test Case Optimization",
+    description:
+      "Rewrites ambiguous or assumption-laden test cases into clear, unambiguous, automation-ready specifications.",
+    color: "#38bdf8",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Risk & Impact Assessment",
+    description:
+      "Categorizes detected issues by severity and impact, helping teams prioritize which test cases to fix first.",
+    color: "#f472b6",
+  },
 ];
 
-export default function AnalyzePage() {
-  const [text, setText] = useState("");
-  const [result, setResult] = useState<AnalysisResult | null>(null);
-  const [analyzedText, setAnalyzedText] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+/* ────────────────────────────────────────────────── */
+/*  How it works steps                                */
+/* ────────────────────────────────────────────────── */
+const steps = [
+  {
+    step: "01",
+    title: "Paste Your Test Case",
+    description:
+      "Enter a single requirement or upload a batch of test cases via CSV or manual entry.",
+  },
+  {
+    step: "02",
+    title: "AI Analyzes Quality",
+    description:
+      "Our NLP engine scores ambiguity, surfaces hidden assumptions, and evaluates automation readiness in seconds.",
+  },
+  {
+    step: "03",
+    title: "Review & Optimize",
+    description:
+      "Get actionable insights, clarifying questions, and AI-rewritten test cases ready for implementation.",
+  },
+];
 
-  const handleAnalyze = async () => {
-    const trimmed = text.trim();
-    if (!trimmed) return;
+/* ────────────────────────────────────────────────── */
+/*  CTA links                                         */
+/* ────────────────────────────────────────────────── */
+const ctaLinks = [
+  {
+    href: "/analyze",
+    label: "Single Analysis",
+    sublabel: "Analyze one test case in depth",
+    icon: Search,
+  },
+  {
+    href: "/batch",
+    label: "Batch Analysis",
+    sublabel: "Process multiple test cases at once",
+    icon: Layers,
+  },
+  {
+    href: "/dashboard",
+    label: "Quality Dashboard",
+    sublabel: "Visualize quality trends & metrics",
+    icon: LayoutDashboard,
+  },
+];
 
-    setLoading(true);
-    setError(null);
-    setResult(null);
-
-    try {
-      const res = await analyzeText(trimmed);
-      setResult(res);
-      setAnalyzedText(trimmed);
-    } catch (e: unknown) {
-      const msg =
-        e instanceof Error ? e.message : "Analysis failed. Check API connection.";
-      setError(msg);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleExample = (example: string) => {
-    setText(example);
-  };
-
-  const textLen = text.trim().length;
-
+/* ═══════════════════════════════════════════════════ */
+/*  Landing Page Component                            */
+/* ═══════════════════════════════════════════════════ */
+export default function LandingPage() {
   return (
-    <div className="space-y-8 animate-fade-in">
-      {/* ── Hero ── */}
-      <div className="text-center space-y-3 pb-2">
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
-          <span className="gradient-text">Test Case Quality</span> Analyzer
-        </h1>
-        <p className="text-sm text-muted-foreground max-w-xl mx-auto leading-relaxed">
-          Detect ambiguity, hidden assumptions, and automation risks in your test
-          cases before implementation — powered by NLP and AI.
-        </p>
-      </div>
+    <div className="min-h-screen w-full">
+      {/* ── HERO ── */}
+      <section className="relative w-full overflow-hidden">
+        {/* Subtle grid background */}
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(99,102,241,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.03) 1px, transparent 1px)",
+            backgroundSize: "64px 64px",
+          }}
+        />
+        {/* Top gradient fade */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#09090b] to-transparent" />
+        {/* Bottom gradient fade */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[#09090b] to-transparent" />
 
-      {/* ── Input Section ── */}
-      <div className="grid lg:grid-cols-[1fr_220px] gap-4">
-        <div className="space-y-3">
-          <div className="relative">
-            <textarea
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              placeholder="Enter your test case or requirement here..."
-              rows={4}
-              maxLength={10000}
-              className={cn(
-                "w-full rounded-xl bg-card border border-border px-4 py-3 text-sm",
-                "placeholder:text-muted-foreground/50 resize-none",
-                "focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40",
-                "transition-all"
-              )}
-            />
-            <span className="absolute bottom-2 right-3 text-[10px] text-muted-foreground/50">
-              {textLen} / 10,000
+        <div className="relative mx-auto w-full px-6 sm:px-10 lg:px-20 pt-28 pb-24 sm:pt-36 sm:pb-32">
+          <div className="max-w-3xl">
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4 }}
+              className="text-xs font-medium tracking-widest uppercase text-indigo-400 mb-5"
+            >
+              AI-Powered Quality Engineering
+            </motion.p>
+
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1]"
+            >
+              Find the flaws in your test cases{" "}
+              <span className="gradient-text">before they find you.</span>
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="mt-6 text-base sm:text-lg text-zinc-400 leading-relaxed max-w-2xl"
+            >
+              ReqQuality AI analyzes your test cases and requirements for
+              ambiguity, hidden assumptions, and automation readiness — giving
+              your QA team actionable intelligence before a single line of test
+              code is written.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.35 }}
+              className="mt-10 flex flex-wrap items-center gap-4"
+            >
+              <Link
+                href="/analyze"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-500 transition-colors"
+              >
+                Start Analyzing
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                href="#features"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-zinc-700 text-zinc-300 text-sm font-medium hover:border-zinc-500 hover:text-white transition-colors"
+              >
+                See How It Works
+              </Link>
+            </motion.div>
+          </div>
+
+          {/* Stats strip */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            className="mt-20 grid grid-cols-2 sm:grid-cols-4 gap-px border-t border-zinc-800"
+          >
+            {[
+              { value: "6", label: "Analysis Dimensions" },
+              { value: "< 2s", label: "Average Analysis Time" },
+              { value: "3", label: "AI-Powered Features" },
+              { value: "CSV", label: "Batch Import Support" },
+            ].map(({ value, label }) => (
+              <div key={label} className="pt-8 pr-8">
+                <p className="text-2xl sm:text-3xl font-bold text-white">
+                  {value}
+                </p>
+                <p className="mt-1 text-xs text-zinc-500 font-medium">
+                  {label}
+                </p>
+              </div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ── DIVIDER ── */}
+      <div className="w-full h-px bg-gradient-to-r from-transparent via-zinc-800 to-transparent" />
+
+      {/* ── FEATURES ── */}
+      <section id="features" className="w-full px-6 sm:px-10 lg:px-20 py-24 sm:py-32">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.15 }}
+          className="mb-16"
+        >
+          <motion.p
+            custom={0}
+            variants={fadeUp}
+            className="text-xs font-medium tracking-widest uppercase text-indigo-400 mb-3"
+          >
+            Capabilities
+          </motion.p>
+          <motion.h2
+            custom={1}
+            variants={fadeUp}
+            className="text-3xl sm:text-4xl font-bold tracking-tight"
+          >
+            Everything you need to ship robust test cases
+          </motion.h2>
+          <motion.p
+            custom={2}
+            variants={fadeUp}
+            className="mt-4 text-zinc-400 max-w-2xl text-sm sm:text-base leading-relaxed"
+          >
+            From individual requirement analysis to full-suite quality
+            dashboards, ReqQuality AI gives your team the tools to eliminate
+            ambiguity and assumptions before they become costly bugs.
+          </motion.p>
+        </motion.div>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-10">
+          {features.map((f, i) => (
+            <motion.div
+              key={f.title}
+              custom={i}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.1 }}
+              variants={fadeUp}
+              className="group"
+            >
+              <div
+                className="flex h-10 w-10 items-center justify-center rounded-lg mb-4"
+                style={{ backgroundColor: f.color + "14" }}
+              >
+                <f.icon className="h-5 w-5" style={{ color: f.color }} />
+              </div>
+              <h3 className="text-base font-semibold mb-2">{f.title}</h3>
+              <p className="text-sm text-zinc-400 leading-relaxed">
+                {f.description}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── DIVIDER ── */}
+      <div className="w-full h-px bg-gradient-to-r from-transparent via-zinc-800 to-transparent" />
+
+      {/* ── HOW IT WORKS ── */}
+      <section className="w-full px-6 sm:px-10 lg:px-20 py-24 sm:py-32">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.15 }}
+          className="mb-16"
+        >
+          <motion.p
+            custom={0}
+            variants={fadeUp}
+            className="text-xs font-medium tracking-widest uppercase text-indigo-400 mb-3"
+          >
+            Workflow
+          </motion.p>
+          <motion.h2
+            custom={1}
+            variants={fadeUp}
+            className="text-3xl sm:text-4xl font-bold tracking-tight"
+          >
+            Three steps to better test quality
+          </motion.h2>
+        </motion.div>
+
+        <div className="grid md:grid-cols-3 gap-12 md:gap-8">
+          {steps.map((s, i) => (
+            <motion.div
+              key={s.step}
+              custom={i}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.1 }}
+              variants={fadeUp}
+            >
+              <span className="text-5xl font-extrabold text-zinc-800 select-none">
+                {s.step}
+              </span>
+              <h3 className="mt-4 text-lg font-semibold">{s.title}</h3>
+              <p className="mt-2 text-sm text-zinc-400 leading-relaxed">
+                {s.description}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── DIVIDER ── */}
+      <div className="w-full h-px bg-gradient-to-r from-transparent via-zinc-800 to-transparent" />
+
+      {/* ── CTA / GET STARTED ── */}
+      <section className="w-full px-6 sm:px-10 lg:px-20 py-24 sm:py-32">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.15 }}
+          className="mb-14"
+        >
+          <motion.p
+            custom={0}
+            variants={fadeUp}
+            className="text-xs font-medium tracking-widest uppercase text-indigo-400 mb-3"
+          >
+            Get Started
+          </motion.p>
+          <motion.h2
+            custom={1}
+            variants={fadeUp}
+            className="text-3xl sm:text-4xl font-bold tracking-tight"
+          >
+            Choose your analysis mode
+          </motion.h2>
+          <motion.p
+            custom={2}
+            variants={fadeUp}
+            className="mt-4 text-zinc-400 max-w-xl text-sm sm:text-base leading-relaxed"
+          >
+            Whether you need to verify a single requirement or audit an entire
+            test suite, we have you covered.
+          </motion.p>
+        </motion.div>
+
+        <div className="grid sm:grid-cols-3 gap-4">
+          {ctaLinks.map((c, i) => (
+            <motion.div
+              key={c.href}
+              custom={i}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.1 }}
+              variants={fadeUp}
+            >
+              <Link
+                href={c.href}
+                className="flex items-start gap-4 p-6 rounded-xl border border-zinc-800 hover:border-zinc-600 transition-colors group"
+              >
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-500/10">
+                  <c.icon className="h-5 w-5 text-indigo-400" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold group-hover:text-white transition-colors">
+                    {c.label}
+                  </p>
+                  <p className="mt-1 text-xs text-zinc-500">{c.sublabel}</p>
+                </div>
+                <ChevronRight className="h-4 w-4 text-zinc-600 group-hover:text-zinc-400 transition-colors mt-0.5 shrink-0" />
+              </Link>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── FOOTER ── */}
+      <footer className="w-full border-t border-zinc-800">
+        <div className="px-6 sm:px-10 lg:px-20 py-10 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2.5">
+            <span className="text-sm font-semibold gradient-text">
+              ReqQuality AI
+            </span>
+            <span className="text-[10px] font-medium text-zinc-600 bg-zinc-800/60 px-1.5 py-0.5 rounded-full">
+              v2.0
             </span>
           </div>
-
-          {/* Validation hints */}
-          {textLen > 0 && textLen < 10 && (
-            <p className="text-xs text-amber-400 flex items-center gap-1.5">
-              <Lightbulb className="h-3 w-3" /> Very short text — analysis
-              confidence may be lower.
-            </p>
-          )}
-          {textLen > 500 && (
-            <p className="text-xs text-blue-400 flex items-center gap-1.5">
-              <FileText className="h-3 w-3" /> Long text — consider breaking
-              into smaller, focused test cases.
-            </p>
-          )}
-
-          {/* Analyze button */}
-          <button
-            onClick={handleAnalyze}
-            disabled={loading || !text.trim()}
-            className={cn(
-              "w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all",
-              "bg-primary text-primary-foreground",
-              "hover:bg-primary/90 active:scale-[0.99]",
-              "disabled:opacity-40 disabled:cursor-not-allowed",
-              !loading && text.trim() && "glow-primary"
-            )}
-          >
-            {loading ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Analyzing...
-              </>
-            ) : (
-              <>
-                <Search className="h-4 w-4" />
-                Analyze Test Quality
-              </>
-            )}
-          </button>
-        </div>
-
-        {/* Quick Examples */}
-        <div className="space-y-2">
-          <p className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
-            <MessageSquareText className="h-3 w-3" />
-            Quick Examples
+          <p className="text-xs text-zinc-600">
+            Intelligent Test Case Quality Analyzer — powered by NLP & AI
           </p>
-          <div className="space-y-1.5 max-h-[200px] overflow-y-auto pr-1">
-            {EXAMPLES.map((ex, i) => (
-              <button
-                key={i}
-                onClick={() => handleExample(ex)}
-                className={cn(
-                  "w-full text-left text-[11px] px-2.5 py-2 rounded-lg border transition-all truncate",
-                  "border-border/60 text-muted-foreground",
-                  "hover:border-primary/30 hover:text-foreground hover:bg-primary/5"
-                )}
-              >
-                {ex}
-              </button>
-            ))}
-          </div>
         </div>
-      </div>
-
-      {/* ── Error ── */}
-      {error && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="bg-red-500/10 border border-red-500/20 text-red-300 text-sm rounded-xl px-4 py-3"
-        >
-          {error}
-        </motion.div>
-      )}
-
-      {/* ── Results ── */}
-      <AnimatePresence mode="wait">
-        {result && (
-          <motion.div
-            key="results"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -16 }}
-            transition={{ duration: 0.4 }}
-            className="space-y-6"
-          >
-            {/* Risk Summary */}
-            <RiskSummary
-              score={result.readiness_score}
-              level={result.readiness_level}
-              issueCount={result.issues.length}
-            />
-
-            {/* Confidence */}
-            <ConfidenceBadge confidence={result.ambiguity.confidence} />
-
-            {/* Main Analysis Grid */}
-            <div className="grid lg:grid-cols-[1fr_200px] gap-6">
-              <div className="space-y-6">
-                {/* Ambiguity + Assumption breakdowns */}
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="bg-card rounded-xl border border-border p-4">
-                    <AmbiguityBreakdown data={result.ambiguity} />
-                  </div>
-                  <div className="bg-card rounded-xl border border-border p-4">
-                    <AssumptionBreakdown data={result.assumptions} />
-                  </div>
-                </div>
-
-                {/* Issues */}
-                {result.issues.length > 0 && (
-                  <div className="bg-card rounded-xl border border-border p-4">
-                    <IssueList issues={result.issues} />
-                  </div>
-                )}
-
-                {/* Clarifying Questions */}
-                {result.clarifying_questions.length > 0 && (
-                  <div className="bg-card rounded-xl border border-border p-4 space-y-3">
-                    <h3 className="text-sm font-semibold flex items-center gap-2">
-                      <Lightbulb className="h-4 w-4 text-blue-400" />
-                      Recommended Clarifications
-                    </h3>
-                    <ul className="space-y-2">
-                      {result.clarifying_questions.map((q, i) => (
-                        <li
-                          key={i}
-                          className="text-xs text-muted-foreground flex items-start gap-2"
-                        >
-                          <span className="text-blue-400 font-mono font-medium shrink-0">
-                            {i + 1}.
-                          </span>
-                          {q}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {/* AI Panels */}
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="bg-card rounded-xl border border-border p-4">
-                    <InterrogatorPanel
-                      text={analyzedText}
-                      issues={result.issues}
-                    />
-                  </div>
-                  <div className="bg-card rounded-xl border border-border p-4">
-                    <OptimizerPanel
-                      text={analyzedText}
-                      issues={result.issues}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Readiness Meter - Sidebar */}
-              <div className="flex flex-col items-center">
-                <div className="bg-card rounded-xl border border-border p-4 sticky top-24">
-                  <ReadinessMeter
-                    score={result.readiness_score}
-                    level={result.readiness_level}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Original Text */}
-            <details className="bg-card rounded-xl border border-border">
-              <summary className="px-4 py-3 text-xs font-medium text-muted-foreground cursor-pointer hover:text-foreground transition">
-                📝 Original Test Case
-              </summary>
-              <div className="px-4 pb-3 text-xs text-foreground/80 whitespace-pre-wrap">
-                {analyzedText}
-              </div>
-            </details>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      </footer>
     </div>
   );
 }

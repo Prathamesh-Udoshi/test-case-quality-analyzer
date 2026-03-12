@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bot, Sparkles, Loader2, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { interrogateRequirement, optimizeTestCase } from "@/lib/api";
 import type { ImpactIssue } from "@/lib/types";
 
 /* ── Deep Interrogation Panel ── */
@@ -24,7 +23,8 @@ export function InterrogatorPanel({
     setError(null);
     setOutput(""); // Start with empty for streaming
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8002'}/analyze/interrogate/stream`, {
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
+      const response = await fetch(`${baseUrl}/analyze/interrogate/stream`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text, issues }),
@@ -67,25 +67,25 @@ export function InterrogatorPanel({
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold flex items-center gap-2">
+        <h3 className="text-xs font-bold text-zinc-200 uppercase tracking-[0.1em] flex items-center gap-2">
           <Bot className="h-4 w-4 text-purple-400" />
           Deep Interrogation
         </h3>
         {output && !loading && (
           <button
             onClick={() => setOutput(null)}
-            className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition"
+            className="text-[10px] uppercase tracking-wider font-bold text-zinc-500 hover:text-zinc-300 flex items-center gap-1 transition-colors"
           >
             <Trash2 className="h-3 w-3" />
-            Clear
+            Reset
           </button>
         )}
       </div>
-      <p className="text-[11px] text-muted-foreground">
+      <p className="text-[12px] text-zinc-500 leading-relaxed font-medium">
         AI agent hunts for &quot;Ghost Logic&quot; and hidden assumptions not
-        caught by rule-based analysis.
+        caught by standard semantic analysis.
       </p>
 
       {!output && !loading && (
@@ -93,25 +93,25 @@ export function InterrogatorPanel({
           onClick={handleInterrogate}
           disabled={loading}
           className={cn(
-            "w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all",
-            "bg-purple-500/10 border border-purple-500/20 text-purple-300",
-            "hover:bg-purple-500/20 hover:border-purple-500/30",
+            "w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all",
+            "bg-purple-600/10 border border-purple-500/30 text-purple-400",
+            "hover:bg-purple-600/20 hover:border-purple-500/50 hover:text-purple-300",
             "disabled:opacity-50 disabled:cursor-not-allowed"
           )}
         >
-          <Bot className="h-4 w-4" />
-          Hunt for Hidden Assumptions
+          <Bot className="h-3.5 w-3.5" />
+          Start Deep Interrogation
         </button>
       )}
 
       {loading && !output && (
-        <div className="flex items-center justify-center py-4">
-           <Loader2 className="h-5 w-5 animate-spin text-purple-400" />
+        <div className="flex items-center justify-center py-6">
+           <Loader2 className="h-5 w-5 animate-spin text-purple-500" />
         </div>
       )}
 
       {error && (
-        <div className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
+        <div className="text-xs font-medium text-red-400 bg-red-500/5 border border-red-500/20 rounded-xl px-4 py-3">
           {error}
         </div>
       )}
@@ -121,15 +121,15 @@ export function InterrogatorPanel({
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-purple-500/5 border border-purple-500/20 rounded-lg px-4 py-3"
+            className="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-4"
           >
-            <div className="flex items-center justify-between mb-2">
-               <p className="text-xs text-purple-300 font-medium">
-                Ask stakeholders these targeted questions:
+            <div className="flex items-center justify-between mb-3 border-b border-zinc-800 pb-2">
+               <p className="text-[10px] text-purple-400 font-bold uppercase tracking-widest">
+                Targeted Questions:
               </p>
-              {loading && <Loader2 className="h-3 w-3 animate-spin text-purple-400" />}
+              {loading && <Loader2 className="h-3 w-3 animate-spin text-purple-500" />}
             </div>
-            <div className="text-xs text-foreground/90 leading-relaxed whitespace-pre-wrap">
+            <div className="text-[13px] text-zinc-300 leading-relaxed whitespace-pre-wrap font-medium">
               {output}
             </div>
           </motion.div>
@@ -156,7 +156,8 @@ export function OptimizerPanel({
     setError(null);
     setOutput("");
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8002'}/analyze/optimize/stream`, {
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
+      const response = await fetch(`${baseUrl}/analyze/optimize/stream`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text, issues }),
@@ -199,25 +200,24 @@ export function OptimizerPanel({
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-cyan-400" />
-          Automation Optimizer
+        <h3 className="text-xs font-bold text-zinc-200 uppercase tracking-[0.1em] flex items-center gap-2">
+          <Sparkles className="h-4 w-4 text-indigo-400" />
+          Test Case Optimizer
         </h3>
         {output && !loading && (
           <button
             onClick={() => setOutput(null)}
-            className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition"
+            className="text-[10px] uppercase tracking-wider font-bold text-zinc-500 hover:text-zinc-300 flex items-center gap-1 transition-colors"
           >
             <Trash2 className="h-3 w-3" />
-            Clear
+            Reset
           </button>
         )}
       </div>
-      <p className="text-[11px] text-muted-foreground">
-        Transform this test case into structured, automation-ready steps with
-        explicit assertions.
+      <p className="text-[12px] text-zinc-500 leading-relaxed font-medium">
+        Transform this test case into clear, structured, automation-ready steps.
       </p>
 
       {!output && !loading && (
@@ -225,25 +225,25 @@ export function OptimizerPanel({
           onClick={handleOptimize}
           disabled={loading}
           className={cn(
-            "w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all",
-            "bg-cyan-500/10 border border-cyan-500/20 text-cyan-300",
-            "hover:bg-cyan-500/20 hover:border-cyan-500/30",
+            "w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all",
+            "bg-indigo-600 text-white shadow-lg shadow-indigo-600/5",
+            "hover:bg-indigo-500 hover:shadow-indigo-600/10",
             "disabled:opacity-50 disabled:cursor-not-allowed"
           )}
         >
-          <Sparkles className="h-4 w-4" />
-          Optimize for Automation
+          <Sparkles className="h-3.5 w-3.5" />
+          Start AI Optimization
         </button>
       )}
 
       {loading && !output && (
-        <div className="flex items-center justify-center py-4">
-           <Loader2 className="h-5 w-5 animate-spin text-cyan-400" />
+        <div className="flex items-center justify-center py-6">
+           <Loader2 className="h-5 w-5 animate-spin text-indigo-500" />
         </div>
       )}
 
       {error && (
-        <div className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
+        <div className="text-xs font-medium text-red-400 bg-red-500/5 border border-red-500/20 rounded-xl px-4 py-3">
           {error}
         </div>
       )}
@@ -253,15 +253,15 @@ export function OptimizerPanel({
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-cyan-500/5 border border-cyan-500/20 rounded-lg px-4 py-3"
+            className="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-4"
           >
-            <div className="flex items-center justify-between mb-2">
-               <p className="text-xs text-cyan-300 font-medium">
-                ✅ Optimized Test Case:
+            <div className="flex items-center justify-between mb-3 border-b border-zinc-800 pb-2">
+               <p className="text-[10px] text-indigo-400 font-bold uppercase tracking-widest">
+                Optimized Output:
               </p>
-              {loading && <Loader2 className="h-3 w-3 animate-spin text-cyan-400" />}
+              {loading && <Loader2 className="h-3 w-3 animate-spin text-indigo-500" />}
             </div>
-            <div className="text-xs text-foreground/90 leading-relaxed whitespace-pre-wrap">
+            <div className="text-[13px] text-zinc-300 leading-relaxed whitespace-pre-wrap font-medium">
               {output}
             </div>
           </motion.div>

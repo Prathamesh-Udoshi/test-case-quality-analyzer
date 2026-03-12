@@ -3,7 +3,7 @@
 @theme {
   --color-background: #09090b;
   --color-foreground: #fafafa;
-  --color-card: #0f0f13;
+  --color-card: #111113;
   --color-card-foreground: #fafafa;
   --color-muted: #18181b;
   --color-muted-foreground: #a1a1aa;
@@ -31,6 +31,7 @@
 }
 
 @layer base {
+
   *,
   *::before,
   *::after {
@@ -49,84 +50,44 @@
     width: 6px;
     height: 6px;
   }
+
   ::-webkit-scrollbar-track {
     background: var(--color-background);
   }
+
   ::-webkit-scrollbar-thumb {
     background: var(--color-border);
     border-radius: 3px;
   }
+
   ::-webkit-scrollbar-thumb:hover {
     background: var(--color-muted-foreground);
   }
 }
 
 @layer utilities {
-  .glass {
-    background: rgba(15, 15, 19, 0.7);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(99, 102, 241, 0.1);
-  }
-
-  .glow-primary {
-    box-shadow: 0 0 20px rgba(99, 102, 241, 0.15), 0 0 60px rgba(99, 102, 241, 0.05);
-  }
-
-  .glow-success {
-    box-shadow: 0 0 20px rgba(34, 197, 94, 0.15);
-  }
-
-  .glow-warning {
-    box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
-  }
-
-  .glow-danger {
-    box-shadow: 0 0 20px rgba(239, 68, 68, 0.15);
-  }
-
   .gradient-text {
-    background: linear-gradient(135deg, #818cf8, #6366f1, #4f46e5);
+    background: linear-gradient(135deg, #a78bfa, #818cf8, #6366f1);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  .gradient-border {
-    position: relative;
-    border: none;
-  }
-
-  .gradient-border::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6, #6366f1);
-    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    mask-composite: exclude;
-    -webkit-mask-composite: xor;
-    pointer-events: none;
-  }
-
   .animate-slide-up {
-    animation: slideUp 0.4s ease-out;
+    animation: slideUp 0.5s ease-out both;
   }
 
   .animate-fade-in {
-    animation: fadeIn 0.3s ease-out;
-  }
-
-  .animate-pulse-slow {
-    animation: pulse 3s ease-in-out infinite;
+    animation: fadeIn 0.4s ease-out both;
   }
 }
 
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -137,17 +98,8 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
-  }
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
   }
 }
