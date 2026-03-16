@@ -230,3 +230,5 @@ node_modules/
 out/
 .env*.local
 .vercel
+
+req_ai/
