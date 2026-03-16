@@ -123,6 +123,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+req_ai/
 
 # Spyder Project Settings
 .spyderproject

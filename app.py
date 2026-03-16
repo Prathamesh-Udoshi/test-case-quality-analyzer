@@ -6,25 +6,13 @@ Analyzes test cases and requirements to detect ambiguity
 and hidden assumptions before test automation.
 """
 
-# Workaround for pydantic v1 compatibility with Python 3.11+
-import typing
-if hasattr(typing, '_GenericAlias'):
-    # Python 3.9+
-    typing._GenericAlias.__module__ = 'typing'
-if hasattr(typing, 'ForwardRef'):
-    # Monkey patch ForwardRef._evaluate for Python 3.11+ compatibility
-    original_evaluate = typing.ForwardRef._evaluate
-    def patched_evaluate(self, globalns, localns, type_params=None, *, recursive_guard=frozenset()):
-        return original_evaluate(self, globalns, localns, type_params, recursive_guard=recursive_guard)
-    typing.ForwardRef._evaluate = patched_evaluate
-
 import logging
-from typing import Dict, Any,List
+import json
+from typing import Dict, Any, List
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
-import json
 from pydantic import BaseModel, Field
 
 from core.scorer import RequirementScorer
@@ -34,14 +22,23 @@ from core.interrogator import AssumptionBuster
 from core.optimizer import TestCaseOptimizer
 from core.config import settings
 
-# Configure logging
+
+# ---------------------------
+# Logging
+# ---------------------------
+
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
+
 logger = logging.getLogger(__name__)
 
-# Initialize FastAPI app
+
+# ---------------------------
+# FastAPI App
+# ---------------------------
+
 app = FastAPI(
     title="Intelligent Test Case Quality Analyzer",
     description="Detects ambiguity and hidden assumptions in test cases and requirements",
@@ -50,75 +47,95 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
-# Add CORS middleware
+
+# ---------------------------
+# CORS
+# ---------------------------
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Configure appropriately for production
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Initialize core components
+
+# ---------------------------
+# Core Components
+# ---------------------------
+
 scorer = RequirementScorer()
 suggestion_generator = SuggestionGenerator()
 text_preprocessor = TextPreprocessor()
 
 
+# ---------------------------
+# Request Models
+# ---------------------------
+
 class AnalyzeRequest(BaseModel):
-    """Request model for test case analysis."""
     text: str = Field(
         ...,
         min_length=1,
         max_length=10000,
-        description="The test case or requirement text to analyze",
-        example="User logs in with valid credentials and accesses dashboard"
+        description="Test case or requirement text to analyze"
     )
 
 
 class RequirementInput(BaseModel):
-    """Input model for requirement interrogation."""
-    text: str = Field(..., description="The requirement text to interrogate")
-    issues: List[Dict[str, Any]] = Field(default=[], description="Detected issues for context")
+    text: str
+    issues: List[Dict[str, Any]] = []
 
+
+class OptimizeRequest(BaseModel):
+    text: str
+    issues: List[Dict[str, Any]] = []
+
+
+# ---------------------------
+# Response Models
+# ---------------------------
 
 class ComponentScore(BaseModel):
-    """Component score with breakdown."""
-    score: float = Field(ge=0, le=100, description="Component score")
-    components: dict = Field(description="Sub-component scores")
+    score: float
+    components: Dict[str, Any]
+
 
 class AmbiguityAnalysis(BaseModel):
-    """Multi-signal ambiguity analysis."""
-    score: float = Field(ge=0, le=100, description="Overall ambiguity score")
-    confidence: str = Field(description="Analysis confidence: HIGH/MEDIUM/LOW")
-    components: dict = Field(description="Component scores: lexical, testability, references")
+    score: float
+    confidence: str
+    components: Dict[str, Any]
+
 
 class AssumptionAnalysis(BaseModel):
-    """Multi-signal assumption analysis."""
-    score: float = Field(ge=0, le=100, description="Overall assumption score")
-    components: dict = Field(description="Component breakdown with strength classification")
+    score: float
+    components: Dict[str, Any]
+
 
 class ImpactIssue(BaseModel):
-    """Issue with impact explanation."""
-    type: str = Field(description="Issue type: Ambiguity or Assumption")
-    message: str = Field(description="Human-readable issue description")
-    impact: str = Field(description="Why this matters for testing/automation")
-    category: str = Field(default=None, description="Assumption category")
-    assumption: str = Field(default=None, description="Specific assumption text")
+    type: str
+    message: str
+    impact: str
+    category: str | None = None
+    assumption: str | None = None
+
 
 class AnalyzeResponse(BaseModel):
-    """Enhanced response model with multi-signal analysis."""
-    ambiguity: AmbiguityAnalysis = Field(description="Multi-signal ambiguity analysis")
-    assumptions: AssumptionAnalysis = Field(description="Multi-signal assumption analysis")
-    readiness_score: float = Field(ge=0, le=100, description="Overall readiness score")
-    readiness_level: str = Field(description="Readiness classification")
-    issues: List[ImpactIssue] = Field(description="Issues with impact explanations")
-    clarifying_questions: List[str] = Field(description="Questions to improve testability")
+    ambiguity: AmbiguityAnalysis
+    assumptions: AssumptionAnalysis
+    readiness_score: float
+    readiness_level: str
+    issues: List[ImpactIssue]
+    clarifying_questions: List[str]
 
+
+# ---------------------------
+# Routes
+# ---------------------------
 
 @app.get("/")
 async def root():
-    """Root endpoint with API information."""
     return {
         "message": "Intelligent Test Case Quality Analyzer API",
         "version": "1.0.0",
@@ -129,245 +146,214 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint."""
     return {
         "status": "healthy",
-        "version": "1.0.0",
         "components": {
-            "nlp_processor": "available",
             "scorer": "available",
-            "suggestion_generator": "available"
+            "nlp": "available"
         }
     }
 
 
 @app.post("/analyze", response_model=AnalyzeResponse)
 async def analyze_test_case(request: AnalyzeRequest):
-    """
-    Analyze test case or requirement text for ambiguity and assumptions.
 
-    This endpoint performs comprehensive analysis to detect:
-    - Ambiguous terms and phrases in test cases
-    - Hidden assumptions about environment, data, and state
-    - Overall readiness for test automation
-    """
     try:
+
         text = request.text.strip()
 
         if not text:
             raise HTTPException(status_code=400, detail="Text cannot be empty")
 
-        logger.info(f"Analyzing text: {text[:100]}...")
+        logger.info(f"Analyzing: {text[:100]}")
 
-        # Perform analysis
         analysis_result = scorer.analyze_text(text)
 
-        # Generate clarifying questions (always provide for comprehensive coverage)
         clarifying_questions = scorer._generate_clarifying_questions(
             analysis_result.get("issues", []),
             text
         )
 
-        # Add clarifying questions to result
         analysis_result["clarifying_questions"] = clarifying_questions
-
-        logger.info(f"Analysis complete - Readiness: {analysis_result.get('readiness_level')}")
 
         return AnalyzeResponse(**analysis_result)
 
     except Exception as e:
-        logger.error(f"Analysis error: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
 
+        logger.error(str(e))
 
-@app.post("/analyze/detailed")
-async def analyze_detailed(request: AnalyzeRequest):
-    """
-    Detailed analysis with preprocessing information.
-
-    Returns comprehensive analysis including:
-    - Basic analysis results
-    - Text preprocessing details
-    - Token-level information
-    - Dependency parsing results
-    """
-    try:
-        text = request.text.strip()
-
-        if not text:
-            raise HTTPException(status_code=400, detail="Text cannot be empty")
-
-        # Get basic analysis
-        analysis_result = scorer.analyze_text(text)
-
-        # Add preprocessing details
-        preprocessing = text_preprocessor.preprocess_text(text)
-        analysis_result["preprocessing"] = {
-            "sentences": preprocessing["sentences"],
-            "token_count": len(preprocessing["tokens"]),
-            "word_count": sum(1 for t in preprocessing["tokens"] if t["is_alpha"]),
-            "entities": preprocessing["entities"]
-        }
-
-        # Generate clarifying questions (always provide for comprehensive coverage)
-        clarifying_questions = suggestion_generator.generate_suggestions(
-            analysis_result.get("issues", []),
-            text,
-            always_ask=True
+        raise HTTPException(
+            status_code=500,
+            detail=f"Analysis failed: {str(e)}"
         )
-        analysis_result["clarifying_questions"] = clarifying_questions
-
-        return analysis_result
-
-    except Exception as e:
-        logger.error(f"Detailed analysis error: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Detailed analysis failed: {str(e)}")
 
 
 @app.post("/analyze/batch")
 async def analyze_batch(request: Dict[str, Any]):
-    """
-    Analyze multiple requirements in batch.
 
-    Expects a JSON object with a 'texts' array containing requirement texts.
-    Returns analysis results for each text.
-    """
-    try:
-        texts = request.get("texts", [])
+    texts = request.get("texts", [])
 
-        if not texts:
-            raise HTTPException(status_code=400, detail="No texts provided for batch analysis")
+    if not texts:
+        raise HTTPException(400, "No texts provided")
 
-        if len(texts) > 50:  # Limit batch size
-            raise HTTPException(status_code=400, detail="Batch size limited to 50 texts")
+    results = []
 
-        results = []
+    for text in texts:
 
-        for text in texts:
-            if not isinstance(text, str) or not text.strip():
-                results.append({"error": "Invalid text provided"})
-                continue
+        try:
 
-            try:
-                analysis = scorer.analyze_text(text.strip())
-                clarifying_questions = scorer._generate_clarifying_questions(
-                    analysis.get("issues", []),
-                    text.strip()
-                )
-                analysis["clarifying_questions"] = clarifying_questions
-                results.append(analysis)
-            except Exception as e:
-                results.append({"error": f"Analysis failed: {str(e)}"})
+            analysis = scorer.analyze_text(text)
 
-        return {"results": results, "total": len(results)}
+            clarifying_questions = scorer._generate_clarifying_questions(
+                analysis.get("issues", []),
+                text
+            )
 
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Batch analysis error: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Batch analysis failed: {str(e)}")
+            analysis["clarifying_questions"] = clarifying_questions
+
+            results.append(analysis)
+
+        except Exception as e:
+
+            results.append({"error": str(e)})
+
+    return {
+        "results": results,
+        "total": len(results)
+    }
 
 
 @app.post("/analyze/interrogate")
 async def interrogate(requirement: RequirementInput):
-    """
-    Generate interrogation questions for a requirement to uncover hidden assumptions.
-    
-    Uses LLM-based analysis to find 'Ghost Logic' and 'Hidden Assumptions'.
-    """
+
     try:
-        logger.info(f"Interrogating requirement: {requirement.text[:100]}...")
-        
-        buster = AssumptionBuster(api_key=settings.OPENAI_API_KEY)
-        questions = buster.interrogate_requirement(requirement.text, requirement.issues)
-        
+
+        buster = AssumptionBuster(
+            api_key=settings.OPENAI_API_KEY
+        )
+
+        questions = buster.interrogate_requirement(
+            requirement.text,
+            requirement.issues
+        )
+
         return {
             "requirement": requirement.text,
             "questions": questions
         }
+
     except Exception as e:
-        logger.error(f"Interrogation error: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Interrogation failed: {str(e)}")
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
 
 
 @app.post("/analyze/interrogate/stream")
 async def interrogate_stream(requirement: RequirementInput):
-    """
-    SSE endpoint for streaming interrogation results.
-    """
+
     async def event_generator():
+
         try:
-            buster = AssumptionBuster(api_key=settings.OPENAI_API_KEY)
-            for token in buster.interrogate_stream(requirement.text, requirement.issues):
-                # SSE format: data: <content>\n\n
+
+            buster = AssumptionBuster(
+                api_key=settings.OPENAI_API_KEY
+            )
+
+            for token in buster.interrogate_stream(
+                requirement.text,
+                requirement.issues
+            ):
+
                 yield f"data: {json.dumps({'token': token})}\n\n"
+
         except Exception as e:
+
             yield f"data: {json.dumps({'error': str(e)})}\n\n"
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
-
-
-class OptimizeRequest(BaseModel):
-    """Request model for test case optimization."""
-    text: str = Field(..., description="The test case text to optimize")
-    issues: List[Dict[str, Any]] = Field(default=[], description="Detected issues to address")
 
 
 @app.post("/analyze/optimize")
 async def optimize_test_case(request: OptimizeRequest):
-    """
-    Optimize a test case for automation readiness.
-    
-    Transforms vague test cases into structured, deterministic steps.
-    """
+
     try:
-        logger.info(f"Optimizing test case: {request.text[:100]}...")
-        
-        optimizer = TestCaseOptimizer(api_key=settings.OPENAI_API_KEY)
-        optimized_text = optimizer.optimize_test_case(request.text, request.issues)
-        
+
+        optimizer = TestCaseOptimizer(
+            api_key=settings.OPENAI_API_KEY
+        )
+
+        optimized = optimizer.optimize_test_case(
+            request.text,
+            request.issues
+        )
+
         return {
             "original": request.text,
-            "optimized": optimized_text
+            "optimized": optimized
         }
+
     except Exception as e:
-        logger.error(f"Optimization error: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Optimization failed: {str(e)}")
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
 
 
 @app.post("/analyze/optimize/stream")
 async def optimize_stream(request: OptimizeRequest):
-    """
-    SSE endpoint for streaming optimization results.
-    """
+
     async def event_generator():
+
         try:
-            optimizer = TestCaseOptimizer(api_key=settings.OPENAI_API_KEY)
-            for token in optimizer.optimize_stream(request.text, request.issues):
+
+            optimizer = TestCaseOptimizer(
+                api_key=settings.OPENAI_API_KEY
+            )
+
+            for token in optimizer.optimize_stream(
+                request.text,
+                request.issues
+            ):
+
                 yield f"data: {json.dumps({'token': token})}\n\n"
+
         except Exception as e:
+
             yield f"data: {json.dumps({'error': str(e)})}\n\n"
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 
 
+# ---------------------------
+# Middleware
+# ---------------------------
+
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
-    """Middleware to log all requests."""
-    logger.info(f"Request: {request.method} {request.url}")
+
+    logger.info(f"{request.method} {request.url}")
+
     response = await call_next(request)
+
     logger.info(f"Response: {response.status_code}")
+
     return response
 
 
+# ---------------------------
+# Run Server
+# ---------------------------
+
 if __name__ == "__main__":
+
     import uvicorn
 
-    # Run the application
     uvicorn.run(
         "app:app",
         host="0.0.0.0",
         port=settings.PORT,
-        reload=True,
-        log_level="info"
+        reload=True
     )
