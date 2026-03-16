@@ -92,3 +92,48 @@ The project is built with a decoupled architecture for maximum scalability and p
     *   `http://localhost:3000/dashboard` — **Analytics & Monitoring**
 
 ---
+
+## ✅ Current Working State (2026)
+
+This repository currently runs as:
+
+- **FastAPI backend** in `app.py` with endpoints under `/analyze`, `/analyze/interrogate`, `/analyze/optimize`, and streaming endpoints.
+- **Core logic** in `core/` modules: `scorer`, `assumption_detector`, `ambiguity_detector`, `interrogator`, `optimizer`, `suggestions`.
+- **NLP preprocessing** in `nlp/preprocess.py`.
+- **Frontend UI** with Next.js in `frontend/` (optional layer for demo/app usage).
+
+### Quick Run (Working)
+
+From repo root:
+
+```bash
+# Activate environment
+.\.venv\Scripts\Activate.ps1
+
+# Install requirements (if not already)
+pip install -r requirements.txt
+python -m spacy download en_core_web_sm
+
+# Run backend
+uvicorn app:app --reload --port 8001
+```
+
+Then in a separate shell:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Open `http://localhost:3000` for UI and `http://localhost:8001/docs` for API docs.
+
+### Health Check
+
+* `GET http://localhost:8001/health`
+* `GET http://localhost:8001/` (root welcome)
+
+### Notes
+
+* Keep `req_ai/` in `.gitignore` to prevent committing your local venv.
+* If backend is broken by syntax, re-open `app.py` and confirm the `if __name__ == "__main__"` block is at the end.
