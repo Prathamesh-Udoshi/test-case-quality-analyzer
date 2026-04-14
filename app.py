@@ -278,7 +278,7 @@ async def interrogate(requirement: RequirementInput):
     try:
         logger.info(f"Interrogating requirement: {requirement.text[:100]}...")
         
-        buster = AssumptionBuster(api_key=settings.OPENAI_API_KEY)
+        buster = AssumptionBuster(api_key=settings.OPENAI_API_KEY, model=settings.OPENAI_MODEL)
         questions = buster.interrogate_requirement(requirement.text, requirement.issues)
         
         return {
@@ -297,7 +297,7 @@ async def interrogate_stream(requirement: RequirementInput):
     """
     async def event_generator():
         try:
-            buster = AssumptionBuster(api_key=settings.OPENAI_API_KEY)
+            buster = AssumptionBuster(api_key=settings.OPENAI_API_KEY, model=settings.OPENAI_MODEL)
             for token in buster.interrogate_stream(requirement.text, requirement.issues):
                 # SSE format: data: <content>\n\n
                 yield f"data: {json.dumps({'token': token})}\n\n"
@@ -323,7 +323,7 @@ async def optimize_test_case(request: OptimizeRequest):
     try:
         logger.info(f"Optimizing test case: {request.text[:100]}...")
         
-        optimizer = TestCaseOptimizer(api_key=settings.OPENAI_API_KEY)
+        optimizer = TestCaseOptimizer(api_key=settings.OPENAI_API_KEY, model=settings.OPENAI_MODEL)
         optimized_text = optimizer.optimize_test_case(request.text, request.issues)
         
         return {
@@ -342,7 +342,7 @@ async def optimize_stream(request: OptimizeRequest):
     """
     async def event_generator():
         try:
-            optimizer = TestCaseOptimizer(api_key=settings.OPENAI_API_KEY)
+            optimizer = TestCaseOptimizer(api_key=settings.OPENAI_API_KEY, model=settings.OPENAI_MODEL)
             for token in optimizer.optimize_stream(request.text, request.issues):
                 yield f"data: {json.dumps({'token': token})}\n\n"
         except Exception as e:

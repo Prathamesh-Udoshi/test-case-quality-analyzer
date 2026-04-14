@@ -2,8 +2,9 @@ import openai
 from typing import List, Dict, Any
 
 class TestCaseOptimizer:
-    def __init__(self, api_key: str):
+    def __init__(self, api_key: str, model: str = "gpt-4o"):
         self.client = openai.OpenAI(api_key=api_key)
+        self.model = model
         self.system_prompt = """
 **ROLE:** You are a Senior Test Automation Engineer and Gherkin Specialist. Your goal is to transform vague, poorly written test cases into "Automation-Ready" structured steps.
 
@@ -56,7 +57,7 @@ Convert the input test case into a highly detailed, deterministic, and measurabl
 
         try:
             response = self.client.chat.completions.create(
-                model="gpt-4.1-nano",
+                model=self.model,
                 messages=[
                     {"role": "system", "content": self.system_prompt},
                     {"role": "user", "content": user_content}
@@ -78,7 +79,7 @@ Convert the input test case into a highly detailed, deterministic, and measurabl
 
         try:
             stream = self.client.chat.completions.create(
-                model="gpt-4-turbo-preview",
+                model=self.model,
                 messages=[
                     {"role": "system", "content": self.system_prompt},
                     {"role": "user", "content": user_content}

@@ -2,8 +2,9 @@ import openai
 from typing import List, Dict, Any
 
 class AssumptionBuster:
-    def __init__(self, api_key: str):
+    def __init__(self, api_key: str, model: str = "gpt-4o"):
         self.client = openai.OpenAI(api_key=api_key)
+        self.model = model
         self.system_prompt = """
 **ROLE:** You are a Senior QA Automation Architect and Requirements Auditor. Your goal is to find "Ghost Logic" and "Hidden Assumptions" in software requirements to prevent development rework.
 
@@ -47,7 +48,7 @@ Given a requirement or test case, you must identify what is NOT said. You will g
 
         try:
             response = self.client.chat.completions.create(
-                model="gpt-4.1-nano",
+                model=self.model,
                 messages=[
                     {"role": "system", "content": self.system_prompt},
                     {"role": "user", "content": user_content}
@@ -70,7 +71,7 @@ Given a requirement or test case, you must identify what is NOT said. You will g
 
         try:
             stream = self.client.chat.completions.create(
-                model="gpt-4-turbo-preview",
+                model=self.model,
                 messages=[
                     {"role": "system", "content": self.system_prompt},
                     {"role": "user", "content": user_content}
