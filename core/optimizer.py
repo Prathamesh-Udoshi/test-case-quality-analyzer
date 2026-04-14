@@ -56,7 +56,7 @@ Convert the input test case into a highly detailed, deterministic, and measurabl
 
         try:
             response = self.client.chat.completions.create(
-                model="gpt-4-turbo-preview",
+                model="gpt-4.1-nano",
                 messages=[
                     {"role": "system", "content": self.system_prompt},
                     {"role": "user", "content": user_content}

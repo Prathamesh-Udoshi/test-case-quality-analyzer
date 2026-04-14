@@ -47,7 +47,7 @@ Given a requirement or test case, you must identify what is NOT said. You will g
 
         try:
             response = self.client.chat.completions.create(
-                model="gpt-4-turbo-preview",
+                model="gpt-4.1-nano",
                 messages=[
                     {"role": "system", "content": self.system_prompt},
                     {"role": "user", "content": user_content}
