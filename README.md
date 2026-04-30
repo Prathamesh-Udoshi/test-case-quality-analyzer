@@ -50,8 +50,8 @@ The project is built with a decoupled architecture for maximum scalability and p
 
 1.  **Clone the Repository**:
     ```bash
-    git clone https://github.com/Prathamesh-Udoshi/ai-req-assumptions-analyzer.git
-    cd req_quality_ai
+    git clone https://github.com/Prathamesh-Udoshi/test-case-quality-analyzer.git
+    cd test-case-quality-analyzer
     ```
 
 2.  **Backend Setup**:
